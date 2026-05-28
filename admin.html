@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>誓约后台 | 管理面板</title>
     <link rel="stylesheet" href="./styles.css" />
+    <link rel="stylesheet" href="./admin.css" />
   </head>
   <body class="admin-page">
     <main class="admin-shell">
@@ -35,6 +36,8 @@
           </div>
           <div class="admin-actions">
             <a class="button ghost" href="./index.html">返回首页</a>
+            <button class="button ghost" type="button" data-refresh-admin>刷新</button>
+            <button class="button ghost" type="button" data-seed-admin>生成测试数据</button>
             <button class="button primary" type="button" data-export-admin>导出日志</button>
             <button class="button ghost" type="button" data-clear-admin>清空日志</button>
           </div>
@@ -61,6 +64,7 @@
               <h2>操作日志</h2>
               <span>Who did what on what IP</span>
             </div>
+            <p class="admin-empty-note" data-action-empty hidden>暂无操作日志。打开首页、登录 Discord、创建账号或发送客服消息后会出现记录。</p>
             <div class="admin-table-wrap">
               <table class="admin-table">
                 <thead>
@@ -82,6 +86,7 @@
               <h2>客服记录</h2>
               <span>客户与客服窗口消息</span>
             </div>
+            <p class="admin-empty-note" data-chat-empty hidden>暂无客服消息。用户在右下角客服窗口发送内容后会出现记录。</p>
             <div class="admin-table-wrap">
               <table class="admin-table">
                 <thead>
