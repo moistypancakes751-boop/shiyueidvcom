@@ -1,5 +1,9 @@
 const adminLogsKey = "syAdminLogs";
 const chatLogsKey = "syChatLogs";
+const supabaseClient =
+  window.supabase && window.SY_SUPABASE_URL && window.SY_SUPABASE_ANON_KEY
+    ? window.supabase.createClient(window.SY_SUPABASE_URL, window.SY_SUPABASE_ANON_KEY)
+    : null;
 
 const loginPanel = document.querySelector("[data-admin-login]");
 const dashboard = document.querySelector("[data-admin-dashboard]");
@@ -37,9 +41,46 @@ const formatTime = (value) => {
   }).format(new Date(value));
 };
 
-const render = () => {
-  const actions = readJson(adminLogsKey);
-  const chats = readJson(chatLogsKey);
+const mapRemoteAction = (log) => ({
+  at: log.created_at,
+  user: log.user_label || log.user_id || "未知",
+  ip: log.ip || "未知",
+  action: log.action,
+  detail: log.detail || {},
+});
+
+const mapRemoteChat = (log) => ({
+  at: log.created_at,
+  user: log.user_label || log.user_id || "未知",
+  ip: log.ip || "未知",
+  speaker: log.speaker,
+  message: log.message,
+});
+
+const fetchRemoteLogs = async () => {
+  if (!supabaseClient) return null;
+
+  try {
+    const [actionsResult, chatsResult] = await Promise.all([
+      supabaseClient.from("admin_logs").select("*").order("created_at", { ascending: false }).limit(300),
+      supabaseClient.from("support_messages").select("*").order("created_at", { ascending: false }).limit(300),
+    ]);
+
+    if (actionsResult.error || chatsResult.error) return null;
+
+    return {
+      actions: (actionsResult.data || []).map(mapRemoteAction),
+      chats: (chatsResult.data || []).map(mapRemoteChat),
+    };
+  } catch {
+    return null;
+  }
+};
+
+const render = async () => {
+  const remote = await fetchRemoteLogs();
+  const actions = remote?.actions || readJson(adminLogsKey);
+  const chats = remote?.chats || readJson(chatLogsKey);
   const users = new Set([...actions.map((log) => log.user), ...chats.map((log) => log.user)].filter(Boolean));
 
   document.querySelector("[data-stat-actions]").textContent = actions.length;
