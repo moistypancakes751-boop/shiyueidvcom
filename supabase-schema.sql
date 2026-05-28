@@ -47,9 +47,24 @@ create table if not exists public.orders (
   status text not null default 'new',
   amount numeric(10, 2),
   note text,
+  order_type text,
+  details jsonb not null default '{}'::jsonb,
+  claimed_by_discord_id text,
+  claimed_by_label text,
+  claimed_at timestamptz,
+  source_channel_id text,
+  source_message_id text,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
+
+alter table public.orders add column if not exists order_type text;
+alter table public.orders add column if not exists details jsonb not null default '{}'::jsonb;
+alter table public.orders add column if not exists claimed_by_discord_id text;
+alter table public.orders add column if not exists claimed_by_label text;
+alter table public.orders add column if not exists claimed_at timestamptz;
+alter table public.orders add column if not exists source_channel_id text;
+alter table public.orders add column if not exists source_message_id text;
 
 create or replace function public.is_admin()
 returns boolean
