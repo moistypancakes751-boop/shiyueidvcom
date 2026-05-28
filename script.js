@@ -1,8 +1,11 @@
 const root = document.documentElement;
 const storageKey = "syClubAccount";
 const discordStorageKey = "syDiscordProfile";
+const adminLogsKey = "syAdminLogs";
+const chatLogsKey = "syChatLogs";
 const discordClientId = "1508776647061409792";
 let memoryAccount = null;
+let cachedVisitorIp = "未知";
 
 root.classList.add("enhanced");
 
@@ -69,6 +72,72 @@ const chatPanel = document.querySelector("[data-chat-panel]");
 const chatLog = document.querySelector("[data-chat-log]");
 const chatForm = document.querySelector("[data-chat-form]");
 
+const safeJsonRead = (key, fallback) => {
+  try {
+    if (typeof localStorage === "undefined") return fallback;
+    return JSON.parse(localStorage.getItem(key)) || fallback;
+  } catch {
+    return fallback;
+  }
+};
+
+const safeJsonWrite = (key, value) => {
+  try {
+    if (typeof localStorage !== "undefined") {
+      localStorage.setItem(key, JSON.stringify(value));
+    }
+  } catch {
+    // Static preview mode can disable storage. The site still works without logs.
+  }
+};
+
+const getVisitorLabel = () => {
+  const account = loadAccount();
+  const discord = loadDiscordProfile();
+
+  if (discord?.username) return `${discord.username} (${discord.id})`;
+  if (account.created && account.name) return account.name;
+  return "游客";
+};
+
+const writeAdminLog = (action, detail = {}) => {
+  const logs = safeJsonRead(adminLogsKey, []);
+  logs.unshift({
+    at: new Date().toISOString(),
+    action,
+    user: getVisitorLabel(),
+    ip: cachedVisitorIp,
+    path: window.location.pathname,
+    userAgent: navigator.userAgent,
+    detail,
+  });
+  safeJsonWrite(adminLogsKey, logs.slice(0, 300));
+};
+
+const writeChatLog = (speaker, message) => {
+  const logs = safeJsonRead(chatLogsKey, []);
+  logs.unshift({
+    at: new Date().toISOString(),
+    speaker,
+    message,
+    user: getVisitorLabel(),
+    ip: cachedVisitorIp,
+    path: window.location.pathname,
+  });
+  safeJsonWrite(chatLogsKey, logs.slice(0, 300));
+};
+
+const loadVisitorIp = async () => {
+  try {
+    const response = await fetch("https://api.ipify.org?format=json", { cache: "no-store" });
+    const data = await response.json();
+    cachedVisitorIp = data.ip || "未知";
+  } catch {
+    cachedVisitorIp = "未知";
+  }
+  writeAdminLog("访问网站", { title: document.title });
+};
+
 const defaultAccount = {
   name: "",
   contact: "",
@@ -122,6 +191,7 @@ const openDiscordLogin = () => {
     prompt: "consent",
   });
 
+  writeAdminLog("点击 Discord 登录", { redirectUri });
   window.location.href = `https://discord.com/oauth2/authorize?${params.toString()}`;
 };
 
@@ -189,6 +259,7 @@ document.addEventListener("click", (event) => {
 
     saveAccount(updated);
     renderAccount();
+    writeAdminLog("模拟完成一单", { pointsAdded: 120, totalPoints: updated.points, totalOrders: updated.orders });
   }
   if (event.target.closest("[data-reset-account]")) {
     memoryAccount = null;
@@ -198,9 +269,16 @@ document.addEventListener("click", (event) => {
       memoryAccount = null;
     }
     renderAccount();
+    writeAdminLog("重置本地账号");
   }
-  if (event.target.closest("[data-open-chat]")) openChat();
-  if (event.target.closest("[data-close-chat]")) closeChat();
+  if (event.target.closest("[data-open-chat]")) {
+    openChat();
+    writeAdminLog("打开客服窗口");
+  }
+  if (event.target.closest("[data-close-chat]")) {
+    closeChat();
+    writeAdminLog("关闭客服窗口");
+  }
   if (event.target.closest("[data-discord-login]")) openDiscordLogin();
 });
 
@@ -223,6 +301,7 @@ accountForm.addEventListener("submit", (event) => {
   saveAccount(account);
   renderAccount();
   closeAccountModal();
+  writeAdminLog("创建或更新账号", { name: account.name, contact: account.contact, service: account.service });
 });
 
 const openChat = () => {
@@ -252,10 +331,14 @@ chatForm.addEventListener("submit", (event) => {
   if (!text) return;
 
   addMessage(text, "user");
+  writeAdminLog("发送客服消息", { message: text });
+  writeChatLog("客户", text);
   input.value = "";
 
   window.setTimeout(() => {
-    addMessage("收到。请补充游戏 ID、区服、当前段位和想预约的时间，我们会按价格表给你确认最终报价。");
+    const reply = "收到。请补充游戏 ID、区服、当前段位和想预约的时间，我们会按价格表给你确认最终报价。";
+    addMessage(reply);
+    writeChatLog("客服", reply);
   }, 520);
 });
 
@@ -267,3 +350,4 @@ window.addEventListener("keydown", (event) => {
 });
 
 renderAccount();
+loadVisitorIp();
