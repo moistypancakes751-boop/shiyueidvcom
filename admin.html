@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>誓约后台 | 管理面板</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body class="admin-page">
+    <main class="admin-shell">
+      <section class="admin-login" data-admin-login>
+        <p class="tag">SY ADMIN</p>
+        <h1>誓约后台</h1>
+        <p>请输入管理员账号查看本机保存的访问日志和客服聊天记录。</p>
+        <form class="admin-form" data-admin-form>
+          <label>
+            用户名
+            <input name="username" autocomplete="username" required placeholder="shiyueadmin" />
+          </label>
+          <label>
+            密码
+            <input name="password" type="password" autocomplete="current-password" required placeholder="shiyueidv" />
+          </label>
+          <button class="button primary" type="submit">进入后台</button>
+          <p class="admin-error" data-admin-error hidden>账号或密码错误。</p>
+        </form>
+      </section>
+
+      <section class="admin-dashboard" data-admin-dashboard hidden>
+        <div class="admin-topbar">
+          <div>
+            <p class="tag">SY ADMIN</p>
+            <h1>管理后台</h1>
+            <p>静态站点版本：日志保存在当前浏览器本地。真实全站日志需要接入后端数据库。</p>
+          </div>
+          <div class="admin-actions">
+            <a class="button ghost" href="./index.html">返回首页</a>
+            <button class="button primary" type="button" data-export-admin>导出日志</button>
+            <button class="button ghost" type="button" data-clear-admin>清空日志</button>
+          </div>
+        </div>
+
+        <div class="admin-stats">
+          <article>
+            <strong data-stat-actions>0</strong>
+            <span>操作日志</span>
+          </article>
+          <article>
+            <strong data-stat-chat>0</strong>
+            <span>客服消息</span>
+          </article>
+          <article>
+            <strong data-stat-users>0</strong>
+            <span>识别用户</span>
+          </article>
+        </div>
+
+        <div class="admin-grid">
+          <article class="admin-card">
+            <div class="admin-card-head">
+              <h2>操作日志</h2>
+              <span>Who did what on what IP</span>
+            </div>
+            <div class="admin-table-wrap">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>时间</th>
+                    <th>用户</th>
+                    <th>IP</th>
+                    <th>操作</th>
+                    <th>详情</th>
+                  </tr>
+                </thead>
+                <tbody data-action-log></tbody>
+              </table>
+            </div>
+          </article>
+
+          <article class="admin-card">
+            <div class="admin-card-head">
+              <h2>客服记录</h2>
+              <span>客户与客服窗口消息</span>
+            </div>
+            <div class="admin-table-wrap">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>时间</th>
+                    <th>用户</th>
+                    <th>IP</th>
+                    <th>发送方</th>
+                    <th>内容</th>
+                  </tr>
+                </thead>
+                <tbody data-chat-log-admin></tbody>
+              </table>
+            </div>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <script src="./admin.js"></script>
+  </body>
+</html>
