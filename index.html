@@ -21,7 +21,7 @@
         <a href="#member">会员</a>
         <a href="#hok">HOK代打</a>
         <a href="#idv">IDV业务</a>
-        <a class="nav-login discord-login-link" href="https://discord.com/oauth2/authorize?client_id=1509661268334739456&redirect_uri=https%3A%2F%2Fshiyueidv.com%2Fauth.html&response_type=token&scope=identify&prompt=consent">Discord登录</a>
+        <a class="nav-login discord-login-link" href="./auth.html">Discord登录</a>
         <a href="#contact">联系</a>
       </nav>
     </header>
@@ -37,7 +37,7 @@
           <p class="hero-subtitle">第五人格陪玩 · 排位上分 · 认知分代打 · 陪伴娱乐</p>
           <div class="hero-actions">
             <button class="button primary" type="button" onclick="document.getElementById('price').scrollIntoView({ behavior: 'smooth' })">查看价格</button>
-            <button class="button discord" type="button" onclick="window.location.href='https://discord.com/oauth2/authorize?client_id=1509661268334739456&redirect_uri=https%3A%2F%2Fshiyueidv.com%2Fauth.html&response_type=token&scope=identify&prompt=consent'">连接 Discord</button>
+            <button class="button discord" type="button" onclick="window.SYAuth.login()">连接 Discord</button>
           </div>
         </div>
       </section>
@@ -67,7 +67,7 @@
           <article class="member-panel account-panel">
             <div class="panel-topline">
               <span>SY PASS</span>
-              <a class="text-button discord-login-link" href="https://discord.com/oauth2/authorize?client_id=1509661268334739456&redirect_uri=https%3A%2F%2Fshiyueidv.com%2Fauth.html&response_type=token&scope=identify&prompt=consent">Discord 登录</a>
+              <a class="text-button discord-login-link" href="./auth.html">Discord 登录</a>
             </div>
             <h3 id="account-name">游客档案</h3>
             <p id="account-status">连接 Discord 后，可显示你的会员资料、累计奖励与客服记录。</p>
@@ -97,7 +97,7 @@
             </div>
             <p class="note" id="reward-next">距离黄金会员还需 500 积分。</p>
             <div class="panel-actions">
-              <a class="button discord" href="https://discord.com/oauth2/authorize?client_id=1509661268334739456&redirect_uri=https%3A%2F%2Fshiyueidv.com%2Fauth.html&response_type=token&scope=identify&prompt=consent">Discord 登录</a>
+              <a class="button discord discord-login-link" href="./auth.html">Discord 登录</a>
               <button class="button primary" type="button" data-add-order>模拟完成一单</button>
               <button class="button ghost" type="button" data-reset-account>重置</button>
             </div>
@@ -349,6 +349,8 @@
       </div>
     </aside>
 
-    <script src="./script.js?v=20260528-1708"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="./supabase-config.js?v=20260528-1840"></script>
+    <script src="./script.js?v=20260528-1840"></script>
   </body>
 </html>
