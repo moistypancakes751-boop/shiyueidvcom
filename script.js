@@ -3,7 +3,7 @@ const storageKey = "syClubAccount";
 const discordStorageKey = "syDiscordProfile";
 const adminLogsKey = "syAdminLogs";
 const chatLogsKey = "syChatLogs";
-const discordClientId = "1508776647061409792";
+const discordClientId = "1509661268334739456";
 let memoryAccount = null;
 let cachedVisitorIp = "未知";
 
