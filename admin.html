@@ -32,7 +32,7 @@
           <div>
             <p class="tag">SY ADMIN</p>
             <h1>管理后台</h1>
-            <p>静态站点版本：日志保存在当前浏览器本地。真实全站日志需要接入后端数据库。</p>
+            <p>已接入 Supabase：优先读取数据库日志，数据库未配置时回退到当前浏览器本地记录。</p>
           </div>
           <div class="admin-actions">
             <a class="button ghost" href="./index.html">返回首页</a>
@@ -106,6 +106,8 @@
       </section>
     </main>
 
-    <script src="./admin.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="./supabase-config.js?v=20260528-1840"></script>
+    <script src="./admin.js?v=20260528-1840"></script>
   </body>
 </html>
