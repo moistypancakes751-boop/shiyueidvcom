@@ -285,6 +285,16 @@ h1 {
   flex-wrap: wrap;
 }
 
+.discord-fallback {
+  display: inline-block;
+  margin-top: 14px;
+  color: #6972f0;
+  font-size: 13px;
+  font-weight: 900;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
 .button {
   position: relative;
   overflow: hidden;
