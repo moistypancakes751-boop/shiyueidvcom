@@ -182,6 +182,7 @@ a {
   border-radius: 50%;
   content: "";
   opacity: 0.52;
+  pointer-events: none;
   transform: translate(calc(var(--pointer-x) * -18px), calc(var(--pointer-y) * -18px));
   transition: transform 0.16s ease-out;
 }
@@ -195,6 +196,7 @@ a {
   height: 1px;
   background: linear-gradient(90deg, transparent, rgba(143, 146, 154, 0.86), transparent);
   content: "";
+  pointer-events: none;
   animation: lineTravel 3.6s ease-in-out infinite;
 }
 
@@ -210,11 +212,13 @@ a {
   transform-origin: center;
   animation: heroBreathe 12s ease-in-out infinite alternate;
   transition: transform 0.16s ease-out;
+  pointer-events: none;
 }
 
 .hero-shade {
   position: absolute;
   inset: 0;
+  pointer-events: none;
   background:
     linear-gradient(90deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.48) 48%, rgba(255, 255, 255, 0.92) 74%),
     linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(247, 247, 248, 0.96));
@@ -235,11 +239,12 @@ a {
 
 .hero-content {
   position: relative;
-  z-index: 2;
+  z-index: 10;
   width: min(560px, 100%);
   margin-left: auto;
   color: var(--ink-strong);
   text-align: right;
+  pointer-events: auto;
 }
 
 .eyebrow,
@@ -283,16 +288,6 @@ h1 {
   justify-content: flex-end;
   gap: 14px;
   flex-wrap: wrap;
-}
-
-.discord-fallback {
-  display: inline-block;
-  margin-top: 14px;
-  color: #6972f0;
-  font-size: 13px;
-  font-weight: 900;
-  text-decoration: underline;
-  text-underline-offset: 4px;
 }
 
 .button {
