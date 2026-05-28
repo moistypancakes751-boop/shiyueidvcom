@@ -170,6 +170,7 @@ a {
   padding: 120px clamp(20px, 7vw, 104px) 80px;
   border-bottom: 1px solid var(--line-soft);
   isolation: isolate;
+  pointer-events: none;
 }
 
 .hero::before {
@@ -239,12 +240,23 @@ a {
 
 .hero-content {
   position: relative;
-  z-index: 10;
+  z-index: 50;
   width: min(560px, 100%);
   margin-left: auto;
   color: var(--ink-strong);
   text-align: right;
   pointer-events: auto;
+}
+
+.hero-content *,
+.hero-actions,
+.hero-actions * {
+  pointer-events: auto;
+}
+
+.hero-actions {
+  position: relative;
+  z-index: 60;
 }
 
 .eyebrow,
