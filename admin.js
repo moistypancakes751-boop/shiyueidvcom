@@ -7,6 +7,8 @@ const form = document.querySelector("[data-admin-form]");
 const error = document.querySelector("[data-admin-error]");
 const actionTable = document.querySelector("[data-action-log]");
 const chatTable = document.querySelector("[data-chat-log-admin]");
+const actionEmpty = document.querySelector("[data-action-empty]");
+const chatEmpty = document.querySelector("[data-chat-empty]");
 
 const readJson = (key) => {
   try {
@@ -43,6 +45,8 @@ const render = () => {
   document.querySelector("[data-stat-actions]").textContent = actions.length;
   document.querySelector("[data-stat-chat]").textContent = chats.length;
   document.querySelector("[data-stat-users]").textContent = users.size;
+  actionEmpty.hidden = actions.length > 0;
+  chatEmpty.hidden = chats.length > 0;
 
   actionTable.innerHTML =
     actions
@@ -57,7 +61,7 @@ const render = () => {
           </tr>
         `,
       )
-      .join("") || `<tr><td colspan="5">暂无操作日志。</td></tr>`;
+      .join("");
 
   chatTable.innerHTML =
     chats
@@ -72,7 +76,7 @@ const render = () => {
           </tr>
         `,
       )
-      .join("") || `<tr><td colspan="5">暂无客服消息。</td></tr>`;
+      .join("");
 };
 
 const openDashboard = () => {
@@ -99,6 +103,56 @@ document.querySelector("[data-clear-admin]").addEventListener("click", () => {
   if (!confirm("确定清空本机保存的后台日志吗？")) return;
   localStorage.removeItem(adminLogsKey);
   localStorage.removeItem(chatLogsKey);
+  render();
+});
+
+document.querySelector("[data-refresh-admin]").addEventListener("click", render);
+
+document.querySelector("[data-seed-admin]").addEventListener("click", () => {
+  const sampleIp = "203.0.113.24";
+  const now = new Date();
+  localStorage.setItem(
+    adminLogsKey,
+    JSON.stringify([
+      {
+        at: now.toISOString(),
+        action: "发送客服消息",
+        user: "测试客户",
+        ip: sampleIp,
+        path: "/index.html",
+        detail: { message: "今晚想约 IDV 七阶陪玩" },
+      },
+      {
+        at: new Date(now.getTime() - 60000).toISOString(),
+        action: "创建或更新账号",
+        user: "测试客户",
+        ip: sampleIp,
+        path: "/index.html",
+        detail: { name: "测试客户", contact: "wechat-test", service: "IDV 陪玩" },
+      },
+    ]),
+  );
+  localStorage.setItem(
+    chatLogsKey,
+    JSON.stringify([
+      {
+        at: now.toISOString(),
+        speaker: "客户",
+        message: "今晚想约 IDV 七阶陪玩，预算 80/h。",
+        user: "测试客户",
+        ip: sampleIp,
+        path: "/index.html",
+      },
+      {
+        at: new Date(now.getTime() + 500).toISOString(),
+        speaker: "客服",
+        message: "收到，请发游戏 ID、区服和可开始时间。",
+        user: "测试客户",
+        ip: sampleIp,
+        path: "/index.html",
+      },
+    ]),
+  );
   render();
 });
 
