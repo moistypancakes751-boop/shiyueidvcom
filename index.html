@@ -21,7 +21,7 @@
         <a href="#member">会员</a>
         <a href="#hok">HOK代打</a>
         <a href="#idv">IDV业务</a>
-        <button class="nav-login" type="button" data-discord-login>Discord登录</button>
+        <a class="nav-login" href="https://discord.com/oauth2/authorize?client_id=1509661268334739456&redirect_uri=https%3A%2F%2Fshiyueidv.com%2Fauth.html&response_type=token&scope=identify&prompt=consent">Discord登录</a>
         <a href="#contact">联系</a>
       </nav>
     </header>
@@ -37,8 +37,7 @@
           <p class="hero-subtitle">第五人格陪玩 · 排位上分 · 认知分代打 · 陪伴娱乐</p>
           <div class="hero-actions">
             <a class="button primary" href="#price">查看价格</a>
-            <button class="button discord" type="button" data-discord-login>连接 Discord</button>
-            <button class="button ghost" type="button" data-open-account>创建账号</button>
+            <a class="button discord" href="https://discord.com/oauth2/authorize?client_id=1509661268334739456&redirect_uri=https%3A%2F%2Fshiyueidv.com%2Fauth.html&response_type=token&scope=identify&prompt=consent">连接 Discord</a>
           </div>
         </div>
       </section>
@@ -68,10 +67,10 @@
           <article class="member-panel account-panel">
             <div class="panel-topline">
               <span>SY PASS</span>
-              <button class="text-button" type="button" data-open-account>创建 / 登录</button>
+              <a class="text-button" href="https://discord.com/oauth2/authorize?client_id=1509661268334739456&redirect_uri=https%3A%2F%2Fshiyueidv.com%2Fauth.html&response_type=token&scope=identify&prompt=consent">Discord 登录</a>
             </div>
             <h3 id="account-name">游客档案</h3>
-            <p id="account-status">连接 Discord 或创建账号后，可保存昵称、联系方式、累计奖励与客服记录。</p>
+            <p id="account-status">连接 Discord 后，可显示你的会员资料、累计奖励与客服记录。</p>
             <div class="discord-profile" id="discord-profile" hidden>
               <img id="discord-avatar" alt="" />
               <div>
@@ -98,7 +97,7 @@
             </div>
             <p class="note" id="reward-next">距离黄金会员还需 500 积分。</p>
             <div class="panel-actions">
-              <button class="button discord" type="button" data-discord-login>Discord 登录</button>
+              <a class="button discord" href="https://discord.com/oauth2/authorize?client_id=1509661268334739456&redirect_uri=https%3A%2F%2Fshiyueidv.com%2Fauth.html&response_type=token&scope=identify&prompt=consent">Discord 登录</a>
               <button class="button primary" type="button" data-add-order>模拟完成一单</button>
               <button class="button ghost" type="button" data-reset-account>重置</button>
             </div>
@@ -326,33 +325,6 @@
       </section>
     </main>
 
-    <div class="account-modal" data-account-modal aria-hidden="true">
-      <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="account-title">
-        <button class="icon-button modal-close" type="button" data-close-account aria-label="关闭账号弹窗">×</button>
-        <p class="tag">SY PASS</p>
-        <h2 id="account-title">创建客户账号</h2>
-        <form class="account-form" data-account-form>
-          <label>
-            昵称
-            <input name="name" autocomplete="nickname" required placeholder="例如：小约" />
-          </label>
-          <label>
-            联系方式
-            <input name="contact" autocomplete="email" required placeholder="微信 / QQ / 邮箱" />
-          </label>
-          <label>
-            常玩业务
-            <select name="service">
-              <option>IDV 陪玩</option>
-              <option>IDV 排位代打</option>
-              <option>IDV 认知分</option>
-              <option>HOK 代打</option>
-            </select>
-          </label>
-          <button class="button primary" type="submit">保存账号</button>
-        </form>
-      </div>
-    </div>
 
     <aside class="chat-widget" data-chat-widget aria-label="在线客服">
       <button class="chat-toggle" type="button" data-open-chat>
