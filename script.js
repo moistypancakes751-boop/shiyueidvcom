@@ -55,8 +55,6 @@ window.addEventListener(
   { passive: true },
 );
 
-const accountModal = document.querySelector("[data-account-modal]");
-const accountForm = document.querySelector("[data-account-form]");
 const accountName = document.querySelector("#account-name");
 const accountStatus = document.querySelector("#account-status");
 const rewardPoints = document.querySelector("#reward-points");
@@ -209,7 +207,7 @@ const renderAccount = () => {
   accountName.textContent = account.created ? `${account.name} 的会员档案` : "游客档案";
   accountStatus.textContent = account.created
     ? `常玩业务：${account.service}。客服将通过 ${account.contact} 联系你。`
-    : "创建账号后可保存昵称、联系方式、累计奖励与客服记录。";
+    : "连接 Discord 后，可显示你的会员资料、累计奖励与客服记录。";
   rewardPoints.textContent = account.points;
   rewardOrders.textContent = account.orders;
   rewardTier.textContent = tier.name;
@@ -231,24 +229,9 @@ const renderAccount = () => {
   }
 };
 
-const openAccountModal = () => {
-  const account = loadAccount();
-  accountModal.classList.add("is-open");
-  accountModal.setAttribute("aria-hidden", "false");
-  accountForm.elements.name.value = account.name;
-  accountForm.elements.contact.value = account.contact;
-  accountForm.elements.service.value = account.service;
-  accountForm.elements.name.focus();
-};
 
-const closeAccountModal = () => {
-  accountModal.classList.remove("is-open");
-  accountModal.setAttribute("aria-hidden", "true");
-};
 
 document.addEventListener("click", (event) => {
-  if (event.target.closest("[data-open-account]")) openAccountModal();
-  if (event.target.closest("[data-close-account]")) closeAccountModal();
   if (event.target.closest("[data-add-order]")) {
     const account = loadAccount();
     const updated = {
@@ -282,27 +265,6 @@ document.addEventListener("click", (event) => {
   if (event.target.closest("[data-discord-login]")) openDiscordLogin();
 });
 
-accountModal.addEventListener("click", (event) => {
-  if (event.target === accountModal) closeAccountModal();
-});
-
-accountForm.addEventListener("submit", (event) => {
-  event.preventDefault();
-  const existing = loadAccount();
-  const account = {
-    ...existing,
-    name: accountForm.elements.name.value.trim(),
-    contact: accountForm.elements.contact.value.trim(),
-    service: accountForm.elements.service.value,
-    points: existing.created ? existing.points : existing.points + 80,
-    created: true,
-  };
-
-  saveAccount(account);
-  renderAccount();
-  closeAccountModal();
-  writeAdminLog("创建或更新账号", { name: account.name, contact: account.contact, service: account.service });
-});
 
 const openChat = () => {
   chatPanel.classList.add("is-open");
@@ -344,7 +306,6 @@ chatForm.addEventListener("submit", (event) => {
 
 window.addEventListener("keydown", (event) => {
   if (event.key === "Escape") {
-    closeAccountModal();
     closeChat();
   }
 });
