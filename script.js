@@ -4,6 +4,8 @@ const discordStorageKey = "syDiscordProfile";
 const adminLogsKey = "syAdminLogs";
 const chatLogsKey = "syChatLogs";
 const discordClientId = "1509661268334739456";
+const discordLoginUrl =
+  "https://discord.com/oauth2/authorize?client_id=1509661268334739456&redirect_uri=https%3A%2F%2Fshiyueidv.com%2Fauth.html&response_type=token&scope=identify&prompt=consent";
 let memoryAccount = null;
 let cachedVisitorIp = "未知";
 
@@ -180,17 +182,8 @@ const discordAvatarUrl = (profile) => {
 };
 
 const openDiscordLogin = () => {
-  const redirectUri = "https://shiyueidv.com/auth.html";
-  const params = new URLSearchParams({
-    client_id: discordClientId,
-    redirect_uri: redirectUri,
-    response_type: "token",
-    scope: "identify",
-    prompt: "consent",
-  });
-
-  writeAdminLog("点击 Discord 登录", { redirectUri });
-  window.location.href = `https://discord.com/oauth2/authorize?${params.toString()}`;
+  writeAdminLog("点击 Discord 登录", { redirectUri: "https://shiyueidv.com/auth.html" });
+  window.location.assign(discordLoginUrl);
 };
 
 const getTier = (points) => {
@@ -232,6 +225,13 @@ const renderAccount = () => {
 
 
 document.addEventListener("click", (event) => {
+  const discordLink = event.target.closest(".discord-login-link");
+  if (discordLink) {
+    event.preventDefault();
+    openDiscordLogin();
+    return;
+  }
+
   if (event.target.closest("[data-add-order]")) {
     const account = loadAccount();
     const updated = {
@@ -262,7 +262,6 @@ document.addEventListener("click", (event) => {
     closeChat();
     writeAdminLog("关闭客服窗口");
   }
-  if (event.target.closest("[data-discord-login]")) openDiscordLogin();
 });
 
 
