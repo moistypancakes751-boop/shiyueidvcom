@@ -1233,6 +1233,7 @@ li b {
   display: grid;
   justify-items: end;
   gap: 12px;
+  pointer-events: none;
 }
 
 .chat-toggle {
@@ -1249,6 +1250,7 @@ li b {
   cursor: pointer;
   font: inherit;
   font-weight: 950;
+  pointer-events: auto;
 }
 
 .chat-panel {
