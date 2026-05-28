@@ -182,7 +182,7 @@ const discordAvatarUrl = (profile) => {
 };
 
 const openDiscordLogin = () => {
-  const redirectUri = `${window.location.origin}${window.location.pathname.replace(/index\\.html$/, "")}auth.html`;
+  const redirectUri = "https://shiyueidv.com/auth.html";
   const params = new URLSearchParams({
     client_id: discordClientId,
     redirect_uri: redirectUri,
