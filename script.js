@@ -6,6 +6,10 @@ const chatLogsKey = "syChatLogs";
 const discordClientId = "1509661268334739456";
 const discordLoginUrl =
   "https://discord.com/oauth2/authorize?client_id=1509661268334739456&redirect_uri=https%3A%2F%2Fshiyueidv.com%2Fauth.html&response_type=token&scope=identify&prompt=consent";
+const supabaseClient =
+  window.supabase && window.SY_SUPABASE_URL && window.SY_SUPABASE_ANON_KEY
+    ? window.supabase.createClient(window.SY_SUPABASE_URL, window.SY_SUPABASE_ANON_KEY)
+    : null;
 let memoryAccount = null;
 let cachedVisitorIp = "未知";
 
@@ -91,6 +95,15 @@ const safeJsonWrite = (key, value) => {
   }
 };
 
+const remoteInsert = async (table, payload) => {
+  try {
+    if (!supabaseClient) return;
+    await supabaseClient.from(table).insert(payload);
+  } catch {
+    // Database tables may not exist yet; local storage remains the fallback.
+  }
+};
+
 const getVisitorLabel = () => {
   const account = loadAccount();
   const discord = loadDiscordProfile();
@@ -101,30 +114,49 @@ const getVisitorLabel = () => {
 };
 
 const writeAdminLog = (action, detail = {}) => {
+  const visitor = getVisitorLabel();
+  const payload = {
+    action,
+    user_label: visitor,
+    ip: cachedVisitorIp,
+    path: window.location.pathname,
+    user_agent: navigator.userAgent,
+    detail,
+  };
   const logs = safeJsonRead(adminLogsKey, []);
   logs.unshift({
     at: new Date().toISOString(),
     action,
-    user: getVisitorLabel(),
+    user: visitor,
     ip: cachedVisitorIp,
     path: window.location.pathname,
     userAgent: navigator.userAgent,
     detail,
   });
   safeJsonWrite(adminLogsKey, logs.slice(0, 300));
+  remoteInsert("admin_logs", payload);
 };
 
 const writeChatLog = (speaker, message) => {
+  const visitor = getVisitorLabel();
+  const payload = {
+    speaker,
+    message,
+    user_label: visitor,
+    ip: cachedVisitorIp,
+    path: window.location.pathname,
+  };
   const logs = safeJsonRead(chatLogsKey, []);
   logs.unshift({
     at: new Date().toISOString(),
     speaker,
     message,
-    user: getVisitorLabel(),
+    user: visitor,
     ip: cachedVisitorIp,
     path: window.location.pathname,
   });
   safeJsonWrite(chatLogsKey, logs.slice(0, 300));
+  remoteInsert("support_messages", payload);
 };
 
 const loadVisitorIp = async () => {
@@ -178,12 +210,32 @@ const loadDiscordProfile = () => {
 
 const discordAvatarUrl = (profile) => {
   if (!profile?.avatar) return "https://cdn.discordapp.com/embed/avatars/0.png";
+  if (String(profile.avatar).startsWith("http")) return profile.avatar;
   return `https://cdn.discordapp.com/avatars/${profile.id}/${profile.avatar}.png?size=128`;
 };
 
-const openDiscordLogin = () => {
+const openDiscordLogin = async () => {
   writeAdminLog("点击 Discord 登录", { redirectUri: "https://shiyueidv.com/auth.html" });
-  window.location.assign(discordLoginUrl);
+  if (!supabaseClient) {
+    window.location.assign(discordLoginUrl);
+    return;
+  }
+
+  const { error } = await supabaseClient.auth.signInWithOAuth({
+    provider: "discord",
+    options: {
+      redirectTo: "https://shiyueidv.com/auth.html",
+      scopes: "identify",
+    },
+  });
+
+  if (error) {
+    window.location.assign(discordLoginUrl);
+  }
+};
+
+window.SYAuth = {
+  login: openDiscordLogin,
 };
 
 const getTier = (points) => {
