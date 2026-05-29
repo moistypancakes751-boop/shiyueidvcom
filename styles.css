@@ -238,6 +238,24 @@ a {
   animation: sheenSweep 6s ease-in-out infinite;
 }
 
+.hero-extra-art {
+  position: absolute;
+  z-index: 2;
+  left: clamp(18px, 5vw, 88px);
+  bottom: clamp(42px, 8vh, 96px);
+  width: min(390px, 34vw);
+  aspect-ratio: 16 / 9;
+  border: 1px solid rgba(184, 187, 194, 0.58);
+  border-radius: 24px;
+  object-fit: cover;
+  object-position: center;
+  opacity: 0.92;
+  filter: saturate(0.82) contrast(0.96);
+  box-shadow: 0 24px 70px rgba(61, 64, 73, 0.18);
+  pointer-events: none;
+  animation: heroCardFloat 5.8s ease-in-out infinite;
+}
+
 .hero-content {
   position: relative;
   z-index: 50;
@@ -911,6 +929,30 @@ li b {
     transform 0.28s ease,
     box-shadow 0.28s ease,
     border-color 0.28s ease;
+}
+
+.member-section {
+  position: relative;
+  overflow: hidden;
+}
+
+.member-art {
+  position: absolute;
+  z-index: 0;
+  right: max(-180px, -8vw);
+  bottom: -20px;
+  width: min(720px, 52vw);
+  opacity: 0.22;
+  filter: saturate(0.78) contrast(0.94);
+  pointer-events: none;
+  transform: translateY(calc(var(--scroll-y) * -22px));
+  animation: artDrift 8s ease-in-out infinite;
+}
+
+.member-section .section-heading,
+.member-section .member-layout {
+  position: relative;
+  z-index: 1;
 }
 
 .member-panel::before {
@@ -1737,6 +1779,10 @@ li b {
 }
 
 .coin-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 380px);
+  gap: 24px;
+  align-items: end;
   margin-bottom: 28px;
 }
 
@@ -1752,6 +1798,23 @@ li b {
   margin: 0;
   font-size: 17px;
   font-weight: 700;
+}
+
+.coin-hero-art {
+  width: 100%;
+  max-height: 280px;
+  border: 1px solid rgba(184, 187, 194, 0.52);
+  border-radius: 24px;
+  object-fit: cover;
+  object-position: center 38%;
+  opacity: 0.94;
+  filter: saturate(0.86) contrast(0.98);
+  box-shadow: 0 22px 60px rgba(61, 64, 73, 0.14);
+  animation: coinArtFloat 5.4s ease-in-out infinite;
+}
+
+.coin-hero-art:hover {
+  transform: translateY(-4px);
 }
 
 .coin-workbench {
@@ -1913,7 +1976,24 @@ li b {
 }
 
 .coin-rules {
+  position: relative;
+  overflow: hidden;
   padding: 24px;
+}
+
+.coin-art {
+  display: block;
+  width: 100%;
+  max-height: 360px;
+  margin: -6px 0 18px;
+  border: 1px solid rgba(184, 187, 194, 0.42);
+  border-radius: 20px;
+  object-fit: cover;
+  object-position: center 42%;
+  opacity: 0.86;
+  filter: saturate(0.82) contrast(0.96);
+  box-shadow: 0 18px 50px rgba(55, 59, 70, 0.12);
+  animation: coinArtFloat 5.4s ease-in-out infinite;
 }
 
 .coin-rules h2 {
@@ -2030,7 +2110,54 @@ li b {
   }
 }
 
+@keyframes artDrift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(-12px, -10px, 0) scale(1.015);
+  }
+}
+
+@keyframes coinArtFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+@keyframes heroCardFloat {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(-1deg);
+  }
+  50% {
+    transform: translate3d(0, -10px, 0) rotate(1deg);
+  }
+}
+
 @media (max-width: 760px) {
+  .hero-extra-art {
+    left: 18px;
+    right: 18px;
+    bottom: 28px;
+    width: auto;
+    max-height: 160px;
+    opacity: 0.72;
+  }
+
+  .coin-hero {
+    grid-template-columns: 1fr;
+  }
+
+  .coin-hero-art {
+    max-height: 220px;
+  }
+
   .coin-workbench,
   .pay-grid,
   .thank-grid {
