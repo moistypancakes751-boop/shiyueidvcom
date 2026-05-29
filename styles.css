@@ -944,8 +944,8 @@ li b {
   height: 100%;
   object-fit: cover;
   object-position: left bottom;
-  opacity: 0.3;
-  filter: blur(0.8px) saturate(0.55) contrast(0.94);
+  opacity: 0.42;
+  filter: blur(0.35px) saturate(0.68) contrast(0.98);
   pointer-events: none;
   transform: scale(1.06) translateY(calc(var(--scroll-y) * -14px));
   animation: artDrift 8s ease-in-out infinite;
@@ -971,8 +971,8 @@ li b {
   z-index: 0;
   inset: 0;
   background:
-    linear-gradient(90deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.78) 50%, rgba(255, 255, 255, 0.92)),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.82), rgba(255, 255, 255, 0.32) 46%, rgba(255, 255, 255, 0.88));
+    linear-gradient(90deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.68) 50%, rgba(255, 255, 255, 0.88)),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.18) 46%, rgba(255, 255, 255, 0.78));
   content: "";
   pointer-events: none;
 }
