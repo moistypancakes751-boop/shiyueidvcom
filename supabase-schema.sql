@@ -15,6 +15,33 @@ create table if not exists public.profiles (
   updated_at timestamptz not null default now()
 );
 
+create table if not exists public.coin_requests (
+  id uuid primary key default gen_random_uuid(),
+  source text not null default 'site',
+  action text not null check (action in ('recharge', 'withdraw')),
+  discord_id text not null,
+  discord_name text,
+  coins integer not null check (coins > 0),
+  rmb_amount numeric(10, 2) not null,
+  payment_method text,
+  status text not null default 'pending',
+  bot_notified boolean not null default false,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create table if not exists public.coin_transactions (
+  id uuid primary key default gen_random_uuid(),
+  discord_id text not null,
+  user_id uuid references auth.users(id) on delete set null,
+  action text not null check (action in ('add', 'remove')),
+  coins integer not null check (coins > 0),
+  balance_after integer,
+  reason text,
+  operator_discord_id text,
+  created_at timestamptz not null default now()
+);
+
 create table if not exists public.support_messages (
   id bigint generated always as identity primary key,
   user_id uuid references auth.users(id) on delete set null,
@@ -52,8 +79,11 @@ create table if not exists public.orders (
   claimed_by_discord_id text,
   claimed_by_label text,
   claimed_at timestamptz,
+  reception_discord_id text,
+  reception_label text,
   source_channel_id text,
   source_message_id text,
+  private_channel_id text,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
@@ -63,8 +93,29 @@ alter table public.orders add column if not exists details jsonb not null defaul
 alter table public.orders add column if not exists claimed_by_discord_id text;
 alter table public.orders add column if not exists claimed_by_label text;
 alter table public.orders add column if not exists claimed_at timestamptz;
+alter table public.orders add column if not exists reception_discord_id text;
+alter table public.orders add column if not exists reception_label text;
 alter table public.orders add column if not exists source_channel_id text;
 alter table public.orders add column if not exists source_message_id text;
+alter table public.orders add column if not exists private_channel_id text;
+
+alter table public.coin_requests add column if not exists source text not null default 'site';
+alter table public.coin_requests add column if not exists action text;
+alter table public.coin_requests add column if not exists discord_id text;
+alter table public.coin_requests add column if not exists discord_name text;
+alter table public.coin_requests add column if not exists coins integer;
+alter table public.coin_requests add column if not exists rmb_amount numeric(10, 2);
+alter table public.coin_requests add column if not exists payment_method text;
+alter table public.coin_requests add column if not exists status text not null default 'pending';
+alter table public.coin_requests add column if not exists bot_notified boolean not null default false;
+
+alter table public.coin_transactions add column if not exists discord_id text;
+alter table public.coin_transactions add column if not exists user_id uuid references auth.users(id) on delete set null;
+alter table public.coin_transactions add column if not exists action text;
+alter table public.coin_transactions add column if not exists coins integer;
+alter table public.coin_transactions add column if not exists balance_after integer;
+alter table public.coin_transactions add column if not exists reason text;
+alter table public.coin_transactions add column if not exists operator_discord_id text;
 
 create or replace function public.is_admin()
 returns boolean
@@ -84,6 +135,8 @@ alter table public.profiles enable row level security;
 alter table public.support_messages enable row level security;
 alter table public.admin_logs enable row level security;
 alter table public.orders enable row level security;
+alter table public.coin_requests enable row level security;
+alter table public.coin_transactions enable row level security;
 
 drop policy if exists "profiles can read own profile" on public.profiles;
 create policy "profiles can read own profile"
@@ -156,3 +209,26 @@ for update
 to authenticated
 using (public.is_admin())
 with check (public.is_admin());
+
+drop policy if exists "anyone can create coin requests" on public.coin_requests;
+create policy "anyone can create coin requests"
+on public.coin_requests
+for insert
+to anon, authenticated
+with check (true);
+
+drop policy if exists "users can read own coin requests" on public.coin_requests;
+create policy "users can read own coin requests"
+on public.coin_requests
+for select
+to authenticated
+using (discord_id = (
+  select discord_id from public.profiles where id = auth.uid()
+) or public.is_admin());
+
+drop policy if exists "admins can read coin transactions" on public.coin_transactions;
+create policy "admins can read coin transactions"
+on public.coin_transactions
+for select
+to authenticated
+using (public.is_admin());
