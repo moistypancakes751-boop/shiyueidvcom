@@ -25,6 +25,20 @@ if (discordProfile) {
 const formatRmb = () => {
   const coins = Number(form.elements.coins.value || 0);
   rmbEl.textContent = `${(coins / 10).toFixed(2)} RMB`;
+  rmbEl.animate(
+    [
+      { transform: "translateY(-2px)", opacity: 0.7 },
+      { transform: "translateY(0)", opacity: 1 },
+    ],
+    { duration: 180, easing: "ease-out" },
+  );
+};
+
+const syncPayCards = () => {
+  document.querySelectorAll(".pay-card").forEach((card) => {
+    const input = card.querySelector("input");
+    card.classList.toggle("is-selected", input.checked);
+  });
 };
 
 modeButtons.forEach((button) => {
@@ -36,7 +50,9 @@ modeButtons.forEach((button) => {
 });
 
 form.elements.coins.addEventListener("input", formatRmb);
+form.elements.payment.forEach((item) => item.addEventListener("change", syncPayCards));
 formatRmb();
+syncPayCards();
 
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
