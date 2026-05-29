@@ -1,0 +1,508 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>成员介绍模板 | 誓约俱乐部</title>
+    <style>
+      :root {
+        --paper: #f7f7f8;
+        --ink: #5e6068;
+        --ink-strong: #2f3138;
+        --line: #b8bbc2;
+        --line-soft: #dfe1e6;
+        --rose: #c99cac;
+        --cyan: #8bb8c1;
+        --violet: #6d75ff;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        min-height: 100%;
+      }
+
+      body {
+        display: grid;
+        min-height: 100vh;
+        place-items: center;
+        background:
+          radial-gradient(circle at 18% 18%, rgba(201, 156, 172, 0.16), transparent 28%),
+          radial-gradient(circle at 86% 42%, rgba(139, 184, 193, 0.16), transparent 30%),
+          linear-gradient(180deg, #ffffff, #eef0f4);
+        color: var(--ink);
+        font-family:
+          "PingFang SC",
+          "Microsoft YaHei",
+          system-ui,
+          -apple-system,
+          sans-serif;
+      }
+
+      .template {
+        position: relative;
+        overflow: hidden;
+        width: 1200px;
+        height: 800px;
+        border: 1px solid rgba(184, 187, 194, 0.72);
+        background:
+          linear-gradient(90deg, rgba(255, 255, 255, 0.82), rgba(255, 255, 255, 0.94) 46%, rgba(255, 255, 255, 0.62)),
+          var(--paper);
+        box-shadow: 0 34px 100px rgba(61, 64, 73, 0.16);
+      }
+
+      .template::before {
+        position: absolute;
+        inset: 0;
+        background:
+          linear-gradient(rgba(184, 187, 194, 0.22) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(184, 187, 194, 0.16) 1px, transparent 1px);
+        background-size: 42px 42px;
+        content: "";
+        opacity: 0.5;
+        pointer-events: none;
+      }
+
+      .template::after {
+        position: absolute;
+        inset: -70px -30px -70px 42%;
+        background:
+          linear-gradient(90deg, rgba(255, 255, 255, 0.98), rgba(255, 255, 255, 0.18) 34%, rgba(255, 255, 255, 0.72)),
+          url("./assets/anime-bg-v3.png") center / cover no-repeat;
+        content: "";
+        opacity: 0.56;
+        filter: saturate(0.66) contrast(0.95) blur(0.2px);
+        pointer-events: none;
+      }
+
+      .brand,
+      .paper-stack,
+      .portrait-card,
+      .stamp,
+      .bottom-title,
+      .side-code,
+      .mini-card {
+        position: absolute;
+      }
+
+      .brand {
+        z-index: 5;
+        top: 38px;
+        left: 54px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        color: var(--ink-strong);
+        font-weight: 950;
+      }
+
+      .brand-mark {
+        display: grid;
+        width: 42px;
+        height: 42px;
+        place-items: center;
+        border: 2px solid var(--line);
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.72);
+        color: var(--rose);
+        font-size: 13px;
+        box-shadow: inset 0 0 0 5px rgba(255, 255, 255, 0.66);
+      }
+
+      .brand span:last-child {
+        font-size: 22px;
+        letter-spacing: 0;
+      }
+
+      .side-code {
+        z-index: 5;
+        top: 42px;
+        right: 54px;
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        color: #8d9098;
+        font-size: 12px;
+        font-weight: 950;
+      }
+
+      .side-code::before {
+        width: 120px;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, var(--cyan), var(--violet));
+        content: "";
+      }
+
+      .paper-stack {
+        z-index: 3;
+        top: 104px;
+        left: 54px;
+        width: 650px;
+        min-height: 618px;
+        border: 2px solid rgba(174, 183, 189, 0.72);
+        padding: 34px 38px 30px;
+        background:
+          linear-gradient(145deg, rgba(255, 255, 255, 0.74), rgba(247, 247, 248, 0.42)),
+          rgba(255, 255, 255, 0.52);
+        box-shadow: 0 24px 70px rgba(61, 64, 73, 0.13);
+        backdrop-filter: blur(16px);
+      }
+
+      .paper-stack::before {
+        position: absolute;
+        inset: 16px;
+        border: 1px solid rgba(184, 187, 194, 0.42);
+        content: "";
+        pointer-events: none;
+      }
+
+      .paper-stack::after {
+        position: absolute;
+        top: -18px;
+        right: 28px;
+        width: 236px;
+        height: 236px;
+        border: 1px solid rgba(143, 146, 154, 0.26);
+        border-radius: 50%;
+        content: "";
+        pointer-events: none;
+      }
+
+      .corner-ribbon {
+        position: absolute;
+        z-index: 4;
+        top: 84px;
+        left: 32px;
+        width: 190px;
+        height: 26px;
+        background:
+          repeating-linear-gradient(135deg, rgba(47, 49, 56, 0.86) 0 10px, rgba(255, 255, 255, 0.7) 10px 18px);
+        opacity: 0.5;
+        transform: rotate(-8deg);
+      }
+
+      .eyebrow {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin: 0 0 16px;
+        color: #8d9098;
+        font-size: 13px;
+        font-weight: 950;
+        letter-spacing: 0;
+        text-transform: uppercase;
+      }
+
+      .eyebrow::after {
+        flex: 1;
+        height: 1px;
+        background: linear-gradient(90deg, rgba(184, 187, 194, 0.8), transparent);
+        content: "";
+      }
+
+      .name-row {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 138px;
+        gap: 18px;
+        align-items: end;
+        margin-bottom: 16px;
+      }
+
+      .name {
+        color: transparent;
+        -webkit-text-stroke: 1.6px #343741;
+        filter: drop-shadow(0 8px 12px rgba(61, 64, 73, 0.14));
+        font-size: 76px;
+        line-height: 0.94;
+        font-weight: 950;
+      }
+
+      .id-box {
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        padding: 10px 14px;
+        background: rgba(255, 255, 255, 0.56);
+        color: var(--ink-strong);
+        font-size: 12px;
+        font-weight: 950;
+        text-align: center;
+      }
+
+      .line-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px 18px;
+        margin-bottom: 18px;
+      }
+
+      .field,
+      .wide-field {
+        position: relative;
+        min-height: 44px;
+        border: 1px solid rgba(184, 187, 194, 0.66);
+        border-radius: 14px;
+        padding: 11px 14px;
+        background: rgba(255, 255, 255, 0.42);
+        color: var(--ink-strong);
+        font-size: 17px;
+        font-weight: 900;
+      }
+
+      .field span,
+      .wide-field span {
+        color: #8d9098;
+        font-size: 13px;
+        font-weight: 950;
+      }
+
+      .blank {
+        display: inline-block;
+        width: 62%;
+        border-bottom: 1.5px solid rgba(94, 96, 104, 0.64);
+        transform: translateY(-3px);
+      }
+
+      .wide-field {
+        margin-bottom: 12px;
+      }
+
+      .wide-field .blank {
+        width: 76%;
+      }
+
+      .role-strip {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-bottom: 20px;
+      }
+
+      .role-strip .wide-field {
+        margin: 0;
+      }
+
+      .section-label {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 20px 0 12px;
+        color: var(--ink-strong);
+        font-size: 14px;
+        font-weight: 950;
+      }
+
+      .section-label::before {
+        width: 34px;
+        height: 2px;
+        background: linear-gradient(90deg, var(--rose), var(--cyan), var(--violet));
+        content: "";
+      }
+
+      .notes {
+        display: grid;
+        gap: 12px;
+      }
+
+      .note-line {
+        display: grid;
+        grid-template-columns: 110px 1fr;
+        gap: 12px;
+        align-items: center;
+        color: var(--ink-strong);
+        font-size: 17px;
+        font-weight: 900;
+      }
+
+      .note-line b {
+        white-space: nowrap;
+      }
+
+      .note-line span {
+        height: 22px;
+        border-bottom: 1.5px solid rgba(94, 96, 104, 0.64);
+      }
+
+      .signature {
+        margin-top: 20px;
+        border: 1px solid rgba(184, 187, 194, 0.52);
+        border-radius: 18px;
+        padding: 14px 18px;
+        background:
+          linear-gradient(135deg, rgba(255, 255, 255, 0.52), rgba(238, 240, 244, 0.28));
+        color: #8d9098;
+        font-size: 13px;
+        font-weight: 900;
+      }
+
+      .signature span {
+        display: inline-block;
+        width: 70%;
+        border-bottom: 1.5px solid rgba(94, 96, 104, 0.52);
+        transform: translateY(-3px);
+      }
+
+      .portrait-card {
+        z-index: 3;
+        top: 118px;
+        right: 58px;
+        width: 388px;
+        height: 552px;
+        border: 2px solid rgba(174, 183, 189, 0.76);
+        background:
+          linear-gradient(145deg, rgba(255, 255, 255, 0.6), rgba(238, 240, 244, 0.28)),
+          rgba(255, 255, 255, 0.36);
+        box-shadow: 0 30px 90px rgba(61, 64, 73, 0.16);
+        backdrop-filter: blur(14px);
+        transform: rotate(1.1deg);
+      }
+
+      .portrait-card::before {
+        position: absolute;
+        z-index: 2;
+        top: -20px;
+        left: 86px;
+        width: 190px;
+        height: 34px;
+        background:
+          linear-gradient(90deg, rgba(255, 255, 255, 0.72), rgba(184, 187, 194, 0.34), rgba(255, 255, 255, 0.72));
+        box-shadow: 0 8px 18px rgba(61, 64, 73, 0.08);
+        content: "";
+        opacity: 0.86;
+        transform: rotate(-3deg);
+      }
+
+      .portrait-card::after {
+        position: absolute;
+        inset: 24px;
+        display: grid;
+        place-items: center;
+        border: 1px dashed rgba(94, 96, 104, 0.42);
+        background:
+          linear-gradient(rgba(184, 187, 194, 0.18) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(184, 187, 194, 0.14) 1px, transparent 1px);
+        background-size: 26px 26px;
+        color: #8d9098;
+        content: "头像 / 立绘";
+        font-size: 34px;
+        font-weight: 950;
+        letter-spacing: 0;
+      }
+
+      .mini-card {
+        z-index: 4;
+        right: 338px;
+        bottom: 58px;
+        width: 170px;
+        height: 126px;
+        border: 2px solid rgba(174, 183, 189, 0.72);
+        background:
+          linear-gradient(145deg, rgba(255, 255, 255, 0.78), rgba(238, 240, 244, 0.36));
+        box-shadow: 0 18px 46px rgba(61, 64, 73, 0.14);
+        transform: rotate(-5deg);
+      }
+
+      .mini-card::before {
+        position: absolute;
+        inset: 14px;
+        display: grid;
+        place-items: center;
+        border: 1px dashed rgba(94, 96, 104, 0.36);
+        color: #8d9098;
+        content: "头像";
+        font-size: 20px;
+        font-weight: 950;
+      }
+
+      .stamp {
+        z-index: 5;
+        right: 72px;
+        bottom: 48px;
+        border: 1px solid rgba(47, 49, 56, 0.68);
+        padding: 8px 14px;
+        background: rgba(47, 49, 56, 0.9);
+        color: white;
+        font-size: 12px;
+        font-weight: 950;
+        letter-spacing: 0;
+      }
+
+      .bottom-title {
+        z-index: 5;
+        left: 62px;
+        bottom: 34px;
+        color: var(--ink-strong);
+        font-size: 48px;
+        font-weight: 950;
+      }
+
+      .bottom-title span {
+        color: #8d9098;
+        font-size: 16px;
+        font-weight: 900;
+      }
+
+      @media print {
+        body {
+          display: block;
+          background: white;
+        }
+
+        .template {
+          width: 1200px;
+          height: 800px;
+          box-shadow: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="template" aria-label="誓约俱乐部成员介绍模板">
+      <div class="corner-ribbon"></div>
+      <div class="brand">
+        <span class="brand-mark">SY</span>
+        <span>誓约俱乐部成员档案</span>
+      </div>
+      <div class="side-code">PROFILE / 2026</div>
+
+      <section class="paper-stack">
+        <p class="eyebrow">MEMBER PROFILE</p>
+        <div class="name-row">
+          <div class="name">成员昵称</div>
+          <div class="id-box">IDV / SY</div>
+        </div>
+
+        <div class="line-grid">
+          <div class="field"><span>性别：</span><i class="blank"></i></div>
+          <div class="field"><span>年龄：</span><i class="blank"></i></div>
+          <div class="field"><span>声线：</span><i class="blank"></i></div>
+          <div class="field"><span>地区：</span><i class="blank"></i></div>
+        </div>
+
+        <div class="role-strip">
+          <div class="wide-field"><span>求生者：</span><i class="blank"></i></div>
+          <div class="wide-field"><span>监管者：</span><i class="blank"></i></div>
+        </div>
+
+        <div class="section-label">CUSTOM INFO</div>
+        <div class="notes">
+          <div class="note-line"><b>擅长：</b><span></span></div>
+          <div class="note-line"><b>可接：</b><span></span></div>
+          <div class="note-line"><b>在线时间：</b><span></span></div>
+          <div class="note-line"><b>自我介绍：</b><span></span></div>
+          <div class="note-line"><b>备注：</b><span></span></div>
+        </div>
+
+        <div class="signature">个性签名：<span></span></div>
+      </section>
+
+      <aside class="portrait-card"></aside>
+      <div class="mini-card"></div>
+      <div class="stamp">@SY CLUB</div>
+      <div class="bottom-title">Member Card <span>/ Editable Template</span></div>
+    </main>
+  </body>
+</html>
