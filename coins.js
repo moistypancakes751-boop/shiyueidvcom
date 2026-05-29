@@ -56,6 +56,7 @@ syncPayCards();
 
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
+  const submitButton = form.querySelector("button[type='submit']");
 
   const coins = Number(form.elements.coins.value || 0);
   if (!Number.isFinite(coins) || coins <= 0) {
@@ -64,35 +65,41 @@ form.addEventListener("submit", async (event) => {
   }
 
   const payload = {
-    source: "site",
-    action: coinMode,
-    discord_id: form.elements.discordId.value.trim(),
-    discord_name: form.elements.discordName.value.trim(),
-    coins: Math.round(coins),
-    rmb_amount: Number((coins / 10).toFixed(2)),
-    payment_method: form.elements.payment.value,
-    status: "pending",
+    p_source: "site",
+    p_action: coinMode,
+    p_discord_id: form.elements.discordId.value.trim(),
+    p_discord_name: form.elements.discordName.value.trim(),
+    p_coins: Math.round(coins),
+    p_payment_method: form.elements.payment.value,
   };
 
-  if (!payload.discord_id || !payload.discord_name) {
+  if (!payload.p_discord_id || !payload.p_discord_name) {
     statusEl.textContent = "请填写 Discord ID 和名字。";
     return;
   }
 
   statusEl.textContent = "正在提交审核...";
+  submitButton.disabled = true;
   try {
     if (!coinSupabase) throw new Error("Supabase 未配置");
-    const { error } = await coinSupabase.from("coin_requests").insert(payload);
+    const { data, error } = await coinSupabase.rpc("create_coin_request", payload);
     if (error) throw error;
-    statusEl.textContent = "申请已提交。请等待管理在 Discord 审核并处理誓约币。";
-    form.reset();
-    if (discordProfile) {
-      form.elements.discordId.value = discordProfile.id || "";
-      form.elements.discordName.value = discordProfile.username || discordProfile.rawUsername || "";
-    }
-    form.elements.coins.value = 100;
-    formatRmb();
+    const params = new URLSearchParams({
+      id: data.order_code || data.id || "",
+      action: data.action || coinMode,
+      coins: String(data.coins || payload.p_coins),
+      rmb: String(data.rmb_amount || (payload.p_coins / 10).toFixed(2)),
+    });
+    window.location.href = `./coin-thank-you.html?${params.toString()}`;
   } catch (error) {
-    statusEl.textContent = "提交失败，请确认 Supabase SQL 已更新，或联系管理手动处理。";
+    const message = error?.message || "";
+    if (message.includes("ACTIVE_COIN_REQUEST")) {
+      statusEl.textContent = `你已有一个待处理誓约币申请，请等待管理员处理后再提交。${message.split(":").pop() || ""}`;
+    } else if (message.includes("COOLDOWN_10_MINUTES")) {
+      statusEl.textContent = "你刚提交过申请，请等待 10 分钟后再提交新的申请。";
+    } else {
+      statusEl.textContent = "提交失败，请确认 Supabase SQL 已更新，或联系管理手动处理。";
+    }
+    submitButton.disabled = false;
   }
 });
