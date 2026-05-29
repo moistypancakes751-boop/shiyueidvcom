@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="920" viewBox="0 0 720 920">
+  <rect width="720" height="920" fill="#1677ff"/>
+  <text x="360" y="92" text-anchor="middle" fill="#fff" font-family="Arial, sans-serif" font-size="46" font-weight="700">推荐使用支付宝</text>
+  <rect x="115" y="185" width="490" height="490" rx="28" fill="#fff"/>
+  <rect x="175" y="245" width="370" height="370" fill="#f5f5f5" stroke="#111" stroke-width="12"/>
+  <text x="360" y="425" text-anchor="middle" fill="#111" font-family="Arial, sans-serif" font-size="34" font-weight="700">替换为支付宝收款码</text>
+  <text x="360" y="730" text-anchor="middle" fill="#fff" font-family="Arial, sans-serif" font-size="30" font-weight="700">将真实二维码图片放到 assets/alipay-qr.svg</text>
+</svg>
