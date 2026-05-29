@@ -922,9 +922,10 @@ li b {
   border: 2px solid rgba(174, 183, 189, 0.86);
   padding: clamp(22px, 3vw, 32px);
   background:
-    linear-gradient(145deg, rgba(255, 255, 255, 0.9), rgba(246, 247, 250, 0.72)),
-    rgba(255, 255, 255, 0.82);
+    linear-gradient(145deg, rgba(255, 255, 255, 0.72), rgba(246, 247, 250, 0.44)),
+    rgba(255, 255, 255, 0.48);
   box-shadow: var(--shadow);
+  backdrop-filter: blur(18px);
   transition:
     transform 0.28s ease,
     box-shadow 0.28s ease,
