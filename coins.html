@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>誓约币 | 誓约俱乐部</title>
+    <meta name="description" content="誓约俱乐部誓约币充值与提现申请。10 誓约币 = 1 RMB。" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body class="coin-page">
+    <header class="site-header">
+      <a class="brand" href="./index.html#top" aria-label="誓约俱乐部首页">
+        <span class="brand-mark">SY</span>
+        <span>誓约俱乐部</span>
+      </a>
+      <nav class="nav" aria-label="主导航">
+        <a href="./index.html#price">价格</a>
+        <a href="./index.html#member">会员</a>
+        <a href="./coins.html">誓约币</a>
+        <a class="nav-login discord-login-link" href="./auth.html">Discord登录</a>
+      </nav>
+    </header>
+
+    <main class="coin-shell">
+      <section class="coin-hero">
+        <p class="tag">SY COIN</p>
+        <h1>誓约币充值 / 提现</h1>
+        <p>10 誓约币 = 1 RMB。提交申请后，管理会在 Discord 审核频道确认并发放或扣除。</p>
+      </section>
+
+      <section class="coin-workbench">
+        <form class="coin-form" data-coin-form>
+          <div class="coin-mode" role="tablist" aria-label="申请类型">
+            <button type="button" class="is-active" data-coin-mode="recharge">充值</button>
+            <button type="button" data-coin-mode="withdraw">提现</button>
+          </div>
+
+          <label>
+            Discord ID
+            <input name="discordId" autocomplete="off" placeholder="例如 757965520892068072" required />
+          </label>
+          <label>
+            Discord 名字
+            <input name="discordName" autocomplete="off" placeholder="例如 魏莱" required />
+          </label>
+          <label>
+            誓约币数量
+            <input name="coins" type="number" min="10" step="10" value="100" required />
+          </label>
+
+          <div class="coin-summary">
+            <span>需支付 / 可提现</span>
+            <strong data-rmb-amount>10.00 RMB</strong>
+          </div>
+
+          <div class="pay-grid">
+            <label class="pay-card">
+              <input type="radio" name="payment" value="wechat" checked />
+              <span>微信支付</span>
+              <img src="./assets/wechat-qr.svg" alt="微信支付二维码" />
+            </label>
+            <label class="pay-card">
+              <input type="radio" name="payment" value="alipay" />
+              <span>支付宝</span>
+              <img src="./assets/alipay-qr.svg" alt="支付宝支付二维码" />
+            </label>
+          </div>
+
+          <button class="button primary" type="submit">已付款 / 继续</button>
+          <p class="coin-status" data-coin-status>请按显示金额支付，付款后点击继续提交审核。</p>
+        </form>
+
+        <aside class="coin-rules">
+          <h2>规则</h2>
+          <p>充值到账后由管理员发放誓约币。</p>
+          <p>提现会由管理员核对余额后扣除誓约币并处理 RMB。</p>
+          <p>誓约币不能自动到账，只有服务器管理员可以通过 bot 发放或扣除。</p>
+        </aside>
+      </section>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="./supabase-config.js?v=20260528-1840"></script>
+    <script src="./coins.js?v=20260528-coin"></script>
+  </body>
+</html>
