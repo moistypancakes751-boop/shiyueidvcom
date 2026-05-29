@@ -1782,6 +1782,10 @@ li b {
   margin-bottom: 28px;
 }
 
+.coin-hero-art {
+  display: none !important;
+}
+
 .coin-hero h1 {
   margin: 8px 0 12px;
   color: var(--ink-strong);
