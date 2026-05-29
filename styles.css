@@ -1733,6 +1733,7 @@ li b {
   width: min(1120px, calc(100% - 32px));
   margin: 0 auto;
   padding: 120px 0 72px;
+  animation: coinPageIn 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
 
 .coin-hero {
@@ -1755,7 +1756,7 @@ li b {
 
 .coin-workbench {
   display: grid;
-  grid-template-columns: minmax(0, 1.25fr) minmax(280px, 0.75fr);
+  grid-template-columns: minmax(0, 1.18fr) minmax(280px, 0.82fr);
   gap: 22px;
   align-items: start;
 }
@@ -1772,6 +1773,17 @@ li b {
   display: grid;
   gap: 16px;
   padding: clamp(18px, 3vw, 30px);
+  position: relative;
+  overflow: hidden;
+}
+
+.coin-form::before {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 3px;
+  background: linear-gradient(90deg, var(--rose), var(--cyan), #6d75ff);
+  content: "";
+  animation: coinLine 2.8s ease-in-out infinite;
 }
 
 .coin-form label {
@@ -1816,6 +1828,7 @@ li b {
 .coin-mode button.is-active {
   background: #30323b;
   color: white;
+  box-shadow: 0 10px 24px rgba(48, 50, 59, 0.18);
 }
 
 .coin-summary {
@@ -1826,6 +1839,7 @@ li b {
   border-radius: 14px;
   padding: 16px;
   background: rgba(247, 247, 248, 0.88);
+  animation: coinFloat 4.8s ease-in-out infinite;
 }
 
 .coin-summary span {
@@ -1840,41 +1854,56 @@ li b {
 .pay-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
+  gap: 18px;
 }
 
 .pay-card {
   position: relative;
-  overflow: hidden;
+  overflow: visible;
   border: 1px solid rgba(184, 187, 194, 0.76);
   border-radius: 16px;
   padding: 14px;
   background: rgba(255, 255, 255, 0.84);
+  box-shadow: 0 16px 36px rgba(55, 59, 70, 0.08);
+  transition:
+    border-color 0.22s ease,
+    box-shadow 0.22s ease,
+    transform 0.22s ease;
+}
+
+.pay-card:hover,
+.pay-card.is-selected {
+  border-color: rgba(109, 117, 255, 0.52);
+  box-shadow: 0 24px 52px rgba(55, 59, 70, 0.14);
+  transform: translateY(-4px);
 }
 
 .pay-card input {
   position: absolute;
-  top: 14px;
-  left: 14px;
-  width: 18px;
-  min-height: 18px;
+  top: 16px;
+  left: 16px;
+  width: 22px;
+  min-height: 22px;
+  accent-color: #6d75ff;
 }
 
 .pay-card span {
   display: block;
-  margin-left: 28px;
+  margin-left: 34px;
   margin-bottom: 12px;
   color: var(--ink-strong);
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 900;
 }
 
 .pay-card img {
   display: block;
   width: 100%;
-  aspect-ratio: 1 / 1.25;
+  aspect-ratio: 1;
   border-radius: 12px;
-  object-fit: cover;
+  object-fit: contain;
+  background: white;
+  padding: 8px;
 }
 
 .coin-status {
@@ -1897,6 +1926,39 @@ li b {
   margin: 0 0 12px;
   font-weight: 700;
   line-height: 1.7;
+}
+
+@keyframes coinPageIn {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes coinLine {
+  0%,
+  100% {
+    opacity: 0.45;
+    transform: translateX(-20%);
+  }
+  50% {
+    opacity: 1;
+    transform: translateX(20%);
+  }
+}
+
+@keyframes coinFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
 }
 
 @media (max-width: 760px) {
