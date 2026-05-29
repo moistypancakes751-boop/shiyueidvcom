@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>申请已提交 | 誓约币</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body class="coin-page">
+    <header class="site-header">
+      <a class="brand" href="./index.html#top" aria-label="誓约俱乐部首页">
+        <span class="brand-mark">SY</span>
+        <span>誓约俱乐部</span>
+      </a>
+      <nav class="nav" aria-label="主导航">
+        <a href="./index.html#price">价格</a>
+        <a href="./coins.html">誓约币</a>
+        <a href="./index.html#contact">联系</a>
+      </nav>
+    </header>
+
+    <main class="coin-shell thank-shell">
+      <section class="thank-card">
+        <p class="tag">SY COIN</p>
+        <h1>谢谢，申请已提交</h1>
+        <p>你的誓约币申请已经进入审核队列。请保留订单号，等待管理在 Discord 处理。</p>
+        <div class="thank-order">
+          <span>订单号</span>
+          <strong data-thank-id>SYB-</strong>
+        </div>
+        <div class="thank-grid">
+          <div>
+            <span>类型</span>
+            <strong data-thank-action>充值</strong>
+          </div>
+          <div>
+            <span>数量</span>
+            <strong data-thank-coins>0 誓约币</strong>
+          </div>
+          <div>
+            <span>金额</span>
+            <strong data-thank-rmb>0 RMB</strong>
+          </div>
+        </div>
+        <div class="panel-actions">
+          <a class="button primary" href="./coins.html">返回誓约币页面</a>
+          <a class="button ghost" href="./index.html">返回首页</a>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const params = new URLSearchParams(window.location.search);
+      const action = params.get("action") === "withdraw" ? "提现" : "充值";
+      document.querySelector("[data-thank-id]").textContent = params.get("id") || "SYB-UNKNOWN";
+      document.querySelector("[data-thank-action]").textContent = action;
+      document.querySelector("[data-thank-coins]").textContent = `${params.get("coins") || "0"} 誓约币`;
+      document.querySelector("[data-thank-rmb]").textContent = `${params.get("rmb") || "0"} RMB`;
+    </script>
+  </body>
+</html>
