@@ -2182,18 +2182,42 @@ li b {
 .members-shell {
   position: relative;
   z-index: 1;
-  width: min(1180px, calc(100% - 32px));
+  width: 100%;
   margin: 0 auto;
-  padding: 120px 0 76px;
+  padding: 68px 0 76px;
   animation: coinPageIn 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
 
 .members-hero {
+  position: relative;
+  overflow: hidden;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(260px, 420px);
-  gap: clamp(24px, 6vw, 72px);
+  min-height: min(760px, calc(100vh - 68px));
   align-items: center;
-  margin-bottom: 34px;
+  justify-items: end;
+  border-bottom: 1px solid rgba(184, 187, 194, 0.44);
+  padding: clamp(88px, 12vw, 150px) clamp(20px, 7vw, 108px) clamp(74px, 10vw, 130px);
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.22) 36%, rgba(255, 255, 255, 0.94) 68%, rgba(255, 255, 255, 0.98) 100%),
+    linear-gradient(180deg, rgba(247, 247, 248, 0.12), rgba(247, 247, 248, 0.9)),
+    url("./hero.png") left center / cover no-repeat;
+}
+
+.members-hero::before {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 74% 38%, rgba(201, 156, 172, 0.18), transparent 28%),
+    radial-gradient(circle at 86% 70%, rgba(139, 184, 193, 0.14), transparent 34%);
+  content: "";
+  pointer-events: none;
+}
+
+.members-hero-copy {
+  position: relative;
+  z-index: 1;
+  width: min(560px, 100%);
+  text-align: right;
 }
 
 .members-hero h1 {
@@ -2204,26 +2228,17 @@ li b {
 }
 
 .members-hero p:not(.tag) {
-  max-width: 720px;
-  margin: 0;
+  max-width: 520px;
+  margin: 0 0 0 auto;
   color: #686b73;
   font-size: 17px;
   font-weight: 750;
   line-height: 1.9;
 }
 
-.members-hero img {
-  width: 100%;
-  aspect-ratio: 4 / 5;
-  border: 1px solid rgba(184, 187, 194, 0.62);
-  border-radius: 26px;
-  object-fit: cover;
-  object-position: center;
-  box-shadow: var(--shadow-lift);
-  filter: saturate(0.82) contrast(0.98);
-}
-
 .member-roster {
+  width: min(1180px, calc(100% - 32px));
+  margin: 34px auto 0;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 18px;
@@ -2326,7 +2341,24 @@ li b {
 @media (max-width: 920px) {
   .members-hero,
   .member-roster {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
+  }
+
+  .members-hero {
+    min-height: 620px;
+    justify-items: start;
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.68) 48%, rgba(255, 255, 255, 0.96) 100%),
+      url("./hero.png") 28% center / cover no-repeat;
+  }
+
+  .members-hero-copy {
+    align-self: end;
+    text-align: left;
+  }
+
+  .members-hero p:not(.tag) {
+    margin-left: 0;
   }
 }
 
@@ -2440,16 +2472,17 @@ li b {
   }
 
   .members-shell {
-    padding-top: 104px;
+    padding-top: 66px;
   }
 
-  .members-hero,
   .member-roster {
     grid-template-columns: 1fr;
   }
 
-  .members-hero img {
-    max-height: 340px;
+  .members-hero {
+    min-height: 650px;
+    padding: 132px 18px 54px;
+    background-position: 26% center;
   }
 
   .roster-card.lead {
