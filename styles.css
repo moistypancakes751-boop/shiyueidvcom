@@ -1769,10 +1769,51 @@ li b {
 
 .coin-page {
   min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+}
+
+.coin-page::before {
+  position: fixed;
+  z-index: 0;
+  top: 76px;
+  right: max(-120px, -7vw);
+  bottom: 0;
+  width: min(720px, 48vw);
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.96), rgba(255, 255, 255, 0.42) 42%, rgba(255, 255, 255, 0.12)),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.42), transparent 26%, rgba(255, 255, 255, 0.9)),
+    url("./assets/anime-home-soft.png") center / cover no-repeat;
+  content: "";
+  filter: blur(2.5px) saturate(0.58) contrast(0.92);
+  opacity: 0.32;
+  pointer-events: none;
+  transform: scale(1.06);
+  animation: sideArtDrift 11s ease-in-out infinite;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 24%, #000 78%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 24%, #000 78%, transparent);
+}
+
+.coin-page::after {
+  position: fixed;
+  z-index: 0;
+  inset: 0;
+  background:
+    radial-gradient(circle at 84% 30%, rgba(109, 117, 255, 0.08), transparent 28%),
+    radial-gradient(circle at 6% 22%, rgba(201, 156, 172, 0.13), transparent 24%),
+    linear-gradient(90deg, transparent 0 52%, rgba(255, 255, 255, 0.52));
+  content: "";
+  pointer-events: none;
+}
+
+.coin-page .site-header,
+.coin-shell {
+  position: relative;
+  z-index: 1;
 }
 
 .coin-shell {
-  width: min(1180px, calc(100% - 32px));
+  width: min(1120px, calc(100% - 32px));
   margin: 0 auto;
   padding: 120px 0 72px;
   animation: coinPageIn 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) both;
@@ -1802,9 +1843,9 @@ li b {
 
 .coin-workbench {
   display: grid;
-  grid-template-columns: minmax(0, 0.95fr) minmax(320px, 0.85fr);
-  gap: 22px;
-  align-items: stretch;
+  grid-template-columns: minmax(0, 680px) minmax(260px, 360px);
+  gap: clamp(22px, 5vw, 54px);
+  align-items: start;
 }
 
 .coin-form {
@@ -1960,49 +2001,16 @@ li b {
 
 .coin-showcase {
   position: relative;
-  display: grid;
-  align-content: end;
-  min-height: 680px;
-  overflow: hidden;
-  border: 1px solid rgba(184, 187, 194, 0.42);
-  border-radius: 30px;
-  background:
-    linear-gradient(90deg, rgba(255, 255, 255, 0.82), rgba(255, 255, 255, 0.42) 48%, rgba(255, 255, 255, 0.18)),
-    radial-gradient(circle at 24% 24%, rgba(201, 156, 172, 0.18), transparent 34%),
-    rgba(255, 255, 255, 0.4);
-  box-shadow: 0 28px 88px rgba(61, 64, 73, 0.1);
-  backdrop-filter: blur(16px);
+  min-height: 0;
+  padding-top: 72px;
 }
 
 .coin-showcase::before {
-  position: absolute;
-  z-index: 0;
-  inset: -12% -18% -12% auto;
-  width: min(520px, 88%);
-  height: auto;
-  border-radius: 0;
-  background:
-    linear-gradient(90deg, rgba(255, 255, 255, 0.96), rgba(255, 255, 255, 0.46) 30%, rgba(255, 255, 255, 0.04) 68%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.26), transparent 30%, rgba(255, 255, 255, 0.78)),
-    url("./assets/anime-home-soft.png") center / cover no-repeat;
-  content: "";
-  filter: saturate(0.72) contrast(0.92) blur(1.5px);
-  opacity: 0.42;
-  pointer-events: none;
-  transform: scale(1.08);
-  animation: sideArtDrift 9s ease-in-out infinite;
+  display: none;
 }
 
 .coin-showcase::after {
-  position: absolute;
-  z-index: 0;
-  inset: 0;
-  background:
-    radial-gradient(circle at 70% 18%, rgba(109, 117, 255, 0.12), transparent 32%),
-    radial-gradient(circle at 28% 80%, rgba(201, 156, 172, 0.18), transparent 34%),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.82), rgba(255, 255, 255, 0.18) 70%);
-  content: "";
-  pointer-events: none;
+  display: none;
 }
 
 .coin-portrait-wrap {
@@ -2033,15 +2041,15 @@ li b {
 
 .coin-rules {
   position: relative;
-  z-index: 2;
-  width: min(420px, calc(100% - 40px));
-  margin: 0 20px 20px;
-  border: 1px solid rgba(184, 187, 194, 0.62);
-  border-radius: 24px;
-  padding: 24px;
-  background: rgba(255, 255, 255, 0.74);
-  box-shadow: 0 22px 60px rgba(61, 64, 73, 0.12);
-  backdrop-filter: blur(18px);
+  z-index: 1;
+  border: 1px solid rgba(184, 187, 194, 0.48);
+  border-radius: 22px;
+  padding: 22px;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.84), rgba(255, 255, 255, 0.58)),
+    rgba(255, 255, 255, 0.62);
+  box-shadow: 0 18px 50px rgba(61, 64, 73, 0.09);
+  backdrop-filter: blur(20px);
 }
 
 .coin-rules h2 {
@@ -2227,12 +2235,7 @@ li b {
   }
 
   .coin-showcase {
-    min-height: 360px;
-  }
-
-  .coin-showcase::before {
-    inset: -16% -22% -18% auto;
-    width: 86%;
+    padding-top: 0;
   }
 
   .coin-shell {
