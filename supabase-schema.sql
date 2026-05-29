@@ -17,6 +17,7 @@ create table if not exists public.profiles (
 
 create table if not exists public.coin_requests (
   id uuid primary key default gen_random_uuid(),
+  order_code text unique default ('SYB-' || upper(substr(replace(gen_random_uuid()::text, '-', ''), 1, 10))),
   source text not null default 'site',
   action text not null check (action in ('recharge', 'withdraw')),
   discord_id text not null,
@@ -100,6 +101,7 @@ alter table public.orders add column if not exists source_message_id text;
 alter table public.orders add column if not exists private_channel_id text;
 
 alter table public.coin_requests add column if not exists source text not null default 'site';
+alter table public.coin_requests add column if not exists order_code text;
 alter table public.coin_requests add column if not exists action text;
 alter table public.coin_requests add column if not exists discord_id text;
 alter table public.coin_requests add column if not exists discord_name text;
@@ -108,6 +110,11 @@ alter table public.coin_requests add column if not exists rmb_amount numeric(10,
 alter table public.coin_requests add column if not exists payment_method text;
 alter table public.coin_requests add column if not exists status text not null default 'pending';
 alter table public.coin_requests add column if not exists bot_notified boolean not null default false;
+update public.coin_requests
+set order_code = 'SYB-' || upper(substr(replace(gen_random_uuid()::text, '-', ''), 1, 10))
+where order_code is null;
+alter table public.coin_requests alter column order_code set default ('SYB-' || upper(substr(replace(gen_random_uuid()::text, '-', ''), 1, 10)));
+create unique index if not exists coin_requests_order_code_idx on public.coin_requests(order_code);
 
 alter table public.coin_transactions add column if not exists discord_id text;
 alter table public.coin_transactions add column if not exists user_id uuid references auth.users(id) on delete set null;
@@ -211,11 +218,6 @@ using (public.is_admin())
 with check (public.is_admin());
 
 drop policy if exists "anyone can create coin requests" on public.coin_requests;
-create policy "anyone can create coin requests"
-on public.coin_requests
-for insert
-to anon, authenticated
-with check (true);
 
 drop policy if exists "users can read own coin requests" on public.coin_requests;
 create policy "users can read own coin requests"
@@ -232,3 +234,87 @@ on public.coin_transactions
 for select
 to authenticated
 using (public.is_admin());
+
+create or replace function public.create_coin_request(
+  p_source text,
+  p_action text,
+  p_discord_id text,
+  p_discord_name text,
+  p_coins integer,
+  p_payment_method text
+)
+returns public.coin_requests
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  existing_pending public.coin_requests;
+  recent_request public.coin_requests;
+  created_request public.coin_requests;
+begin
+  if p_action not in ('recharge', 'withdraw') then
+    raise exception 'INVALID_ACTION';
+  end if;
+
+  if p_discord_id is null or length(trim(p_discord_id)) < 5 then
+    raise exception 'INVALID_DISCORD_ID';
+  end if;
+
+  if p_coins is null or p_coins <= 0 then
+    raise exception 'INVALID_COIN_AMOUNT';
+  end if;
+
+  select *
+  into existing_pending
+  from public.coin_requests
+  where discord_id = trim(p_discord_id)
+    and status = 'pending'
+  order by created_at desc
+  limit 1;
+
+  if existing_pending.id is not null then
+    raise exception 'ACTIVE_COIN_REQUEST:%', existing_pending.order_code;
+  end if;
+
+  select *
+  into recent_request
+  from public.coin_requests
+  where discord_id = trim(p_discord_id)
+    and created_at > now() - interval '10 minutes'
+  order by created_at desc
+  limit 1;
+
+  if recent_request.id is not null then
+    raise exception 'COOLDOWN_10_MINUTES:%', recent_request.order_code;
+  end if;
+
+  insert into public.coin_requests (
+    source,
+    action,
+    discord_id,
+    discord_name,
+    coins,
+    rmb_amount,
+    payment_method,
+    status,
+    bot_notified
+  )
+  values (
+    coalesce(nullif(trim(p_source), ''), 'site'),
+    p_action,
+    trim(p_discord_id),
+    nullif(trim(p_discord_name), ''),
+    p_coins,
+    round((p_coins::numeric / 10), 2),
+    nullif(trim(p_payment_method), ''),
+    'pending',
+    false
+  )
+  returning * into created_request;
+
+  return created_request;
+end;
+$$;
+
+grant execute on function public.create_coin_request(text, text, text, text, integer, text) to anon, authenticated;
