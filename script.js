@@ -4,8 +4,10 @@ const discordStorageKey = "syDiscordProfile";
 const adminLogsKey = "syAdminLogs";
 const chatLogsKey = "syChatLogs";
 const discordClientId = "1509661268334739456";
+const discordRedirectUrl = `${window.location.origin}/auth.html`;
+const discordScopes = "identify email guilds guilds.members.read connections";
 const discordLoginUrl =
-  "https://discord.com/oauth2/authorize?client_id=1509661268334739456&redirect_uri=https%3A%2F%2Fshiyueidv.com%2Fauth.html&response_type=token&scope=identify&prompt=consent";
+  `https://discord.com/oauth2/authorize?client_id=${discordClientId}&redirect_uri=${encodeURIComponent(discordRedirectUrl)}&response_type=token&scope=${encodeURIComponent(discordScopes)}&prompt=consent`;
 const supabaseClient =
   window.supabase && window.SY_SUPABASE_URL && window.SY_SUPABASE_ANON_KEY
     ? window.supabase.createClient(window.SY_SUPABASE_URL, window.SY_SUPABASE_ANON_KEY)
@@ -215,7 +217,7 @@ const discordAvatarUrl = (profile) => {
 };
 
 const openDiscordLogin = async () => {
-  writeAdminLog("点击 Discord 登录", { redirectUri: "https://shiyueidv.com/auth.html" });
+  writeAdminLog("点击 Discord 登录", { redirectUri: discordRedirectUrl });
   if (!supabaseClient) {
     window.location.assign(discordLoginUrl);
     return;
@@ -224,8 +226,8 @@ const openDiscordLogin = async () => {
   const { error } = await supabaseClient.auth.signInWithOAuth({
     provider: "discord",
     options: {
-      redirectTo: "https://shiyueidv.com/auth.html",
-      scopes: "identify",
+      redirectTo: discordRedirectUrl,
+      scopes: discordScopes,
     },
   });
 
@@ -267,7 +269,9 @@ const renderAccount = () => {
     discordId.textContent = `Discord ID: ${discord.id}`;
     if (!account.created && discord.username) {
       accountName.textContent = `${discord.username} 的会员档案`;
-      accountStatus.textContent = "Discord 已连接。你还可以补充联系方式，方便客服确认订单。";
+      accountStatus.textContent = discord.supabaseSynced
+        ? "Discord 已连接。你还可以补充联系方式，方便客服确认订单。"
+        : "Discord 本地资料存在，但 Supabase 尚未确认。请重新点击「连接 Discord」完成同步。";
     }
   } else {
     discordProfile.hidden = true;
