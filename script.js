@@ -5,6 +5,7 @@ const adminLogsKey = "syAdminLogs";
 const chatLogsKey = "syChatLogs";
 const discordClientId = "1509661268334739456";
 const discordRedirectUrl = `${window.location.origin}/auth.html`;
+const discordAuthUrl = `${discordRedirectUrl}?v=security-snapshot-2`;
 const discordScopes = "identify email guilds guilds.members.read connections";
 const discordLoginUrl =
   `https://discord.com/oauth2/authorize?client_id=${discordClientId}&redirect_uri=${encodeURIComponent(discordRedirectUrl)}&response_type=token&scope=${encodeURIComponent(discordScopes)}&prompt=consent`;
@@ -217,23 +218,17 @@ const discordAvatarUrl = (profile) => {
 };
 
 const openDiscordLogin = async () => {
-  writeAdminLog("点击 Discord 登录", { redirectUri: discordRedirectUrl });
+  writeAdminLog("点击 Discord 登录", { authUrl: discordAuthUrl, redirectUri: discordRedirectUrl });
+  if (window.location.pathname.endsWith("/auth.html")) {
+    window.location.assign(discordAuthUrl);
+    return;
+  }
   if (!supabaseClient) {
-    window.location.assign(discordLoginUrl);
+    window.location.assign(discordAuthUrl);
     return;
   }
 
-  const { error } = await supabaseClient.auth.signInWithOAuth({
-    provider: "discord",
-    options: {
-      redirectTo: discordRedirectUrl,
-      scopes: discordScopes,
-    },
-  });
-
-  if (error) {
-    window.location.assign(discordLoginUrl);
-  }
+  window.location.assign(discordAuthUrl);
 };
 
 window.SYAuth = {
