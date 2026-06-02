@@ -22,9 +22,17 @@
     <script src="./supabase-config.js?v=20260528-1840"></script>
     <script>
       const statusEl = document.querySelector("#auth-status");
+      const redirectTo = `${window.location.origin}/auth.html`;
+      const discordScopes = "identify email guilds guilds.members.read connections";
+      const shiyueGuildId = "1498434492723888257";
       const supabaseClient =
         window.supabase && window.SY_SUPABASE_URL && window.SY_SUPABASE_ANON_KEY
-          ? window.supabase.createClient(window.SY_SUPABASE_URL, window.SY_SUPABASE_ANON_KEY)
+          ? window.supabase.createClient(window.SY_SUPABASE_URL, window.SY_SUPABASE_ANON_KEY, {
+              auth: {
+                detectSessionInUrl: true,
+                flowType: "pkce",
+              },
+            })
           : null;
 
       const getDiscordProfile = (user) => {
@@ -42,18 +50,110 @@
         };
       };
 
-      const syncProfile = async (profile) => {
-        try {
-          if (!supabaseClient || !profile?.userId) return;
-          await supabaseClient.from("profiles").upsert({
-            id: profile.userId,
-            discord_id: profile.id,
-            username: profile.username,
-            avatar_url: profile.avatar,
-            updated_at: new Date().toISOString(),
-          });
-        } catch {
-          // The site can still log in before the database tables are created.
+      const discordGet = async (path, token) => {
+        if (!token) return null;
+        const response = await fetch(`https://discord.com/api/v10${path}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        if (!response.ok) {
+          return null;
+        }
+        return response.json();
+      };
+
+      const summarizeGuild = (guild) => ({
+        id: guild.id,
+        name: guild.name,
+        owner: Boolean(guild.owner),
+        permissions: guild.permissions || "",
+        features: Array.isArray(guild.features) ? guild.features : [],
+        approximate_member_count: guild.approximate_member_count ?? null,
+        approximate_presence_count: guild.approximate_presence_count ?? null,
+      });
+
+      const summarizeConnection = (connection) => ({
+        id: connection.id,
+        name: connection.name,
+        type: connection.type,
+        verified: Boolean(connection.verified),
+        visibility: connection.visibility ?? null,
+      });
+
+      const summarizeMember = (member) => {
+        if (!member) return null;
+        return {
+          nick: member.nick || "",
+          avatar: member.avatar || "",
+          roles: Array.isArray(member.roles) ? member.roles : [],
+          joined_at: member.joined_at || null,
+          premium_since: member.premium_since || null,
+          pending: Boolean(member.pending),
+          communication_disabled_until: member.communication_disabled_until || null,
+        };
+      };
+
+      const collectDiscordSecuritySnapshot = async (token) => {
+        if (!token) {
+          return { collected_at: new Date().toISOString(), scopes: discordScopes, error: "missing_provider_token" };
+        }
+
+        const [user, guilds, connections, shiyueMember] = await Promise.all([
+          discordGet("/users/@me", token),
+          discordGet("/users/@me/guilds?with_counts=true", token),
+          discordGet("/users/@me/connections", token),
+          discordGet(`/users/@me/guilds/${shiyueGuildId}/member`, token),
+        ]);
+
+        const guildList = Array.isArray(guilds) ? guilds.map(summarizeGuild) : [];
+        const connectionList = Array.isArray(connections) ? connections.map(summarizeConnection) : [];
+        return {
+          collected_at: new Date().toISOString(),
+          scopes: discordScopes,
+          user: user
+            ? {
+                id: user.id,
+                username: user.username,
+                global_name: user.global_name || "",
+                discriminator: user.discriminator || "",
+                avatar: user.avatar || "",
+                banner: user.banner || "",
+                accent_color: user.accent_color ?? null,
+                locale: user.locale || "",
+                mfa_enabled: Boolean(user.mfa_enabled),
+                verified: Boolean(user.verified),
+                email: user.email || "",
+                flags: user.flags ?? null,
+                public_flags: user.public_flags ?? null,
+                premium_type: user.premium_type ?? null,
+                primary_guild: user.primary_guild || null,
+              }
+            : null,
+          guilds: guildList,
+          guild_count: guildList.length,
+          connections: connectionList,
+          connection_count: connectionList.length,
+          shiyue_member: summarizeMember(shiyueMember),
+        };
+      };
+
+      const syncProfile = async (profile, securitySnapshot) => {
+        if (!supabaseClient || !profile?.userId) {
+          throw new Error("Supabase client or user id is missing.");
+        }
+
+        const { error } = await supabaseClient.from("profiles").upsert({
+          id: profile.userId,
+          discord_id: profile.id,
+          username: profile.username,
+          avatar_url: profile.avatar,
+          security_snapshot: securitySnapshot,
+          updated_at: new Date().toISOString(),
+        });
+
+        if (error) {
+          throw error;
         }
       };
 
@@ -65,6 +165,20 @@
 
         try {
           const code = new URLSearchParams(window.location.search).get("code");
+          const hasTokenHash = new URLSearchParams(window.location.hash.replace(/^#/, "")).has("access_token");
+          if (!code && !hasTokenHash) {
+            statusEl.textContent = "正在跳转到 Discord 授权。";
+            const { error } = await supabaseClient.auth.signInWithOAuth({
+              provider: "discord",
+              options: {
+                redirectTo,
+                scopes: discordScopes,
+              },
+            });
+            if (error) throw error;
+            return;
+          }
+
           if (code) await supabaseClient.auth.exchangeCodeForSession(code);
 
           const { data, error } = await supabaseClient.auth.getSession();
@@ -75,14 +189,27 @@
           }
 
           const profile = getDiscordProfile(data.session.user);
-          localStorage.setItem("syDiscordProfile", JSON.stringify(profile));
-          await syncProfile(profile);
+          const securitySnapshot = await collectDiscordSecuritySnapshot(data.session.provider_token);
+          await syncProfile(profile, securitySnapshot);
+          localStorage.setItem(
+            "syDiscordProfile",
+            JSON.stringify({
+              ...profile,
+              supabaseSynced: true,
+              securitySnapshot: {
+                guildCount: securitySnapshot.guild_count || 0,
+                connectionCount: securitySnapshot.connection_count || 0,
+                hasShiyueMember: Boolean(securitySnapshot.shiyue_member),
+              },
+            }),
+          );
           statusEl.textContent = "Discord 已连接，正在返回会员中心。";
           window.setTimeout(() => {
             window.location.href = "./index.html#member";
           }, 900);
         } catch (error) {
-          statusEl.textContent = "Discord 登录读取失败。请确认 Supabase 和 Discord 的 Redirect URL 已配置。";
+          console.error(error);
+          statusEl.textContent = "Discord 已授权，但写入 Supabase 失败。请检查 profiles 表、RLS policy 和 Supabase URL/Key 后重新连接。";
         }
       }
 
