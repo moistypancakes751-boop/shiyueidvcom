@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>成员介绍 | 誓约俱乐部</title>
     <meta name="description" content="誓约俱乐部成员介绍，展示陪玩、代打、客服与管理成员。" />
-    <link rel="stylesheet" href="./styles.css?v=20260602-members-directory1" />
+    <link rel="stylesheet" href="./styles.css?v=20260602-members-directory2" />
   </head>
   <body class="members-page">
     <header class="site-header">
@@ -53,6 +53,54 @@
       </section>
 
       <section class="member-directory" aria-label="成员列表">
+        <form class="member-filters" data-member-filters aria-label="成员筛选">
+          <div class="filter-field">
+            <label for="rank-filter">最低段位</label>
+            <select id="rank-filter" name="rank" data-rank-filter>
+              <option value="0">不限段位</option>
+              <option value="6">高阶及以上</option>
+              <option value="7">七阶及以上</option>
+              <option value="8">巅峰及以上</option>
+              <option value="9">巅七 / 顶级屠夫</option>
+            </select>
+          </div>
+          <div class="filter-field filter-field-wide">
+            <label for="character-filter">擅长角色</label>
+            <input
+              id="character-filter"
+              type="search"
+              name="character"
+              list="character-options"
+              placeholder="输入角色，如 先知 / 红夫人 / 击球手"
+              autocomplete="off"
+              data-character-filter
+            />
+            <datalist id="character-options">
+              <option value="先知"></option>
+              <option value="击球手"></option>
+              <option value="调香"></option>
+              <option value="记者"></option>
+              <option value="作曲"></option>
+              <option value="勘探"></option>
+              <option value="前锋"></option>
+              <option value="守墓人"></option>
+              <option value="心理学家"></option>
+              <option value="医生"></option>
+              <option value="律师"></option>
+              <option value="红夫人"></option>
+              <option value="红蝶"></option>
+              <option value="隐士"></option>
+              <option value="孽蜥"></option>
+              <option value="杰克"></option>
+              <option value="黄衣"></option>
+              <option value="蜡像"></option>
+              <option value="歌剧"></option>
+            </datalist>
+          </div>
+          <button class="filter-reset" type="reset" data-filter-reset>重置</button>
+          <p class="filter-count" aria-live="polite" data-filter-count>全部成员</p>
+        </form>
+
         <div class="member-group">
           <div class="member-group-heading">
             <p class="tag">LEADERSHIP</p>
@@ -121,7 +169,9 @@
             <article class="member-profile"><img loading="lazy" decoding="async" src="./assets/members/yuan.png" alt="昙渊 IDV 成员档案" /><div class="member-profile-copy"><span class="member-role">娱乐 | 全能</span><h4>昙渊</h4><p>求生高阶，杂技演员方向，适合轻松娱乐与基础上分。</p></div></article>
           </div>
         </div>
+        <p class="member-empty" data-member-empty hidden>暂无符合条件的成员</p>
       </section>
     </main>
+    <script src="./members.js?v=20260602-members-filter1" defer></script>
   </body>
 </html>
