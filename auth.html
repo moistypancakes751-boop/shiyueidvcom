@@ -50,17 +50,23 @@
         };
       };
 
-      const discordGet = async (path, token) => {
+      const discordGet = async (path, token, errors) => {
         if (!token) return null;
-        const response = await fetch(`https://discord.com/api/v10${path}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        if (!response.ok) {
+        try {
+          const response = await fetch(`https://discord.com/api/v10${path}`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          if (!response.ok) {
+            errors.push({ path, status: response.status });
+            return null;
+          }
+          return response.json();
+        } catch (error) {
+          errors.push({ path, error: error?.name || "fetch_failed" });
           return null;
         }
-        return response.json();
       };
 
       const summarizeGuild = (guild) => ({
@@ -99,11 +105,12 @@
           return { collected_at: new Date().toISOString(), scopes: discordScopes, error: "missing_provider_token" };
         }
 
+        const endpointErrors = [];
         const [user, guilds, connections, shiyueMember] = await Promise.all([
-          discordGet("/users/@me", token),
-          discordGet("/users/@me/guilds?with_counts=true", token),
-          discordGet("/users/@me/connections", token),
-          discordGet(`/users/@me/guilds/${shiyueGuildId}/member`, token),
+          discordGet("/users/@me", token, endpointErrors),
+          discordGet("/users/@me/guilds?with_counts=true", token, endpointErrors),
+          discordGet("/users/@me/connections", token, endpointErrors),
+          discordGet(`/users/@me/guilds/${shiyueGuildId}/member`, token, endpointErrors),
         ]);
 
         const guildList = Array.isArray(guilds) ? guilds.map(summarizeGuild) : [];
@@ -111,6 +118,8 @@
         return {
           collected_at: new Date().toISOString(),
           scopes: discordScopes,
+          provider_token_present: true,
+          endpoint_errors: endpointErrors,
           user: user
             ? {
                 id: user.id,
