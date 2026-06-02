@@ -8,6 +8,7 @@ create table if not exists public.profiles (
   contact text,
   game_id text,
   main_service text default 'IDV 陪玩',
+  security_snapshot jsonb not null default '{}'::jsonb,
   points integer not null default 0,
   order_count integer not null default 0,
   role text not null default 'customer',
@@ -41,6 +42,38 @@ create table if not exists public.coin_transactions (
   reason text,
   operator_discord_id text,
   created_at timestamptz not null default now()
+);
+
+create table if not exists public.idv_player_stats (
+  username text primary key,
+  server text,
+  survivor_tier text,
+  survivor_winrate numeric(5, 2),
+  survivor_matches integer,
+  hunter_tier text,
+  hunter_winrate numeric(5, 2),
+  hunter_matches integer,
+  source text not null default 'admin',
+  updated_by_discord_id text,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create table if not exists public.idv_leaderboard_entries (
+  leaderboard_key text not null,
+  rank integer not null,
+  server text,
+  side text,
+  username text not null,
+  tier text,
+  winrate numeric(5, 2),
+  matches integer,
+  character_name text,
+  knowledge_points integer,
+  source text not null default 'game_export',
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  primary key (leaderboard_key, rank)
 );
 
 create table if not exists public.support_messages (
@@ -99,6 +132,7 @@ alter table public.orders add column if not exists reception_label text;
 alter table public.orders add column if not exists source_channel_id text;
 alter table public.orders add column if not exists source_message_id text;
 alter table public.orders add column if not exists private_channel_id text;
+alter table public.profiles add column if not exists security_snapshot jsonb not null default '{}'::jsonb;
 
 alter table public.coin_requests add column if not exists source text not null default 'site';
 alter table public.coin_requests add column if not exists order_code text;
@@ -124,11 +158,13 @@ alter table public.coin_transactions add column if not exists balance_after inte
 alter table public.coin_transactions add column if not exists reason text;
 alter table public.coin_transactions add column if not exists operator_discord_id text;
 
-create or replace function public.is_admin()
+create schema if not exists private;
+
+create or replace function private.is_admin()
 returns boolean
 language sql
 security definer
-set search_path = public
+set search_path = ''
 as $$
   select exists (
     select 1
@@ -145,12 +181,26 @@ alter table public.orders enable row level security;
 alter table public.coin_requests enable row level security;
 alter table public.coin_transactions enable row level security;
 
+revoke insert, update on public.profiles from public, anon, authenticated;
+grant insert (id, discord_id, username, avatar_url, contact, game_id, main_service, security_snapshot, updated_at)
+on public.profiles
+to authenticated;
+grant update (id, discord_id, username, avatar_url, contact, game_id, main_service, security_snapshot, updated_at)
+on public.profiles
+to authenticated;
+
+revoke insert, update on public.orders from public, anon, authenticated;
+grant insert (user_id, customer_label, category, amount, note, order_type, details)
+on public.orders
+to authenticated;
+grant update on public.orders to authenticated;
+
 drop policy if exists "profiles can read own profile" on public.profiles;
 create policy "profiles can read own profile"
 on public.profiles
 for select
 to authenticated
-using (id = auth.uid() or public.is_admin());
+using (id = auth.uid() or private.is_admin());
 
 drop policy if exists "profiles can insert own profile" on public.profiles;
 create policy "profiles can insert own profile"
@@ -164,8 +214,8 @@ create policy "profiles can update own profile"
 on public.profiles
 for update
 to authenticated
-using (id = auth.uid() or public.is_admin())
-with check (id = auth.uid() or public.is_admin());
+using (id = auth.uid() or private.is_admin())
+with check (id = auth.uid() or private.is_admin());
 
 drop policy if exists "anyone can send support messages" on public.support_messages;
 create policy "anyone can send support messages"
@@ -179,7 +229,7 @@ create policy "admins can read support messages"
 on public.support_messages
 for select
 to authenticated
-using (public.is_admin());
+using (private.is_admin());
 
 drop policy if exists "anyone can write admin logs" on public.admin_logs;
 create policy "anyone can write admin logs"
@@ -193,29 +243,40 @@ create policy "admins can read admin logs"
 on public.admin_logs
 for select
 to authenticated
-using (public.is_admin());
+using (private.is_admin());
 
 drop policy if exists "users can create own orders" on public.orders;
 create policy "users can create own orders"
 on public.orders
 for insert
 to authenticated
-with check (user_id = auth.uid());
+with check (
+  user_id = auth.uid()
+  and status = 'new'
+  and claimed_by_discord_id is null
+  and claimed_by_label is null
+  and claimed_at is null
+  and reception_discord_id is null
+  and reception_label is null
+  and source_channel_id is null
+  and source_message_id is null
+  and private_channel_id is null
+);
 
 drop policy if exists "users can read own orders" on public.orders;
 create policy "users can read own orders"
 on public.orders
 for select
 to authenticated
-using (user_id = auth.uid() or public.is_admin());
+using (user_id = auth.uid() or private.is_admin());
 
 drop policy if exists "admins can update orders" on public.orders;
 create policy "admins can update orders"
 on public.orders
 for update
 to authenticated
-using (public.is_admin())
-with check (public.is_admin());
+using (private.is_admin())
+with check (private.is_admin());
 
 drop policy if exists "anyone can create coin requests" on public.coin_requests;
 
@@ -226,14 +287,14 @@ for select
 to authenticated
 using (discord_id = (
   select discord_id from public.profiles where id = auth.uid()
-) or public.is_admin());
+) or private.is_admin());
 
 drop policy if exists "admins can read coin transactions" on public.coin_transactions;
 create policy "admins can read coin transactions"
 on public.coin_transactions
 for select
 to authenticated
-using (public.is_admin());
+using (private.is_admin());
 
 create or replace function public.create_coin_request(
   p_source text,
@@ -318,3 +379,5 @@ end;
 $$;
 
 grant execute on function public.create_coin_request(text, text, text, text, integer, text) to anon, authenticated;
+
+drop function if exists public.is_admin();
