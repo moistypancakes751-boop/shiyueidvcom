@@ -2338,23 +2338,59 @@ li b {
   font-weight: 900;
 }
 
-.member-roster {
+.member-directory {
   width: min(1180px, calc(100% - 32px));
   margin: 34px auto 0;
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 46px;
+}
+
+.member-group {
+  display: grid;
   gap: 18px;
 }
 
-.roster-card {
+.member-group-heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 18px;
+  border-bottom: 1px solid rgba(184, 187, 194, 0.48);
+  padding-bottom: 14px;
+}
+
+.member-group-heading .tag {
+  margin: 0;
+}
+
+.member-group-heading h3 {
+  margin: 0;
+  color: var(--ink-strong);
+  font-size: clamp(24px, 3vw, 38px);
+  line-height: 1.1;
+  text-align: right;
+}
+
+.leader-grid,
+.idv-grid {
+  display: grid;
+  gap: 18px;
+}
+
+.leader-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.idv-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.member-profile {
   position: relative;
   overflow: hidden;
   display: grid;
-  align-content: start;
-  min-height: 286px;
   border: 1px solid rgba(184, 187, 194, 0.62);
-  border-radius: 22px;
-  padding: clamp(20px, 3vw, 28px);
+  border-radius: 20px;
   background:
     linear-gradient(145deg, rgba(255, 255, 255, 0.88), rgba(255, 255, 255, 0.58)),
     rgba(255, 255, 255, 0.72);
@@ -2368,29 +2404,29 @@ li b {
   animation: membersCardRise 0.86s cubic-bezier(0.18, 0.82, 0.2, 1) both;
 }
 
-.roster-card:nth-child(2) {
+.member-profile:nth-child(2) {
   animation-delay: 0.08s;
 }
 
-.roster-card:nth-child(3) {
+.member-profile:nth-child(3) {
   animation-delay: 0.16s;
 }
 
-.roster-card:nth-child(4) {
+.member-profile:nth-child(4) {
   animation-delay: 0.24s;
 }
 
-.roster-card:nth-child(5) {
+.member-profile:nth-child(5) {
   animation-delay: 0.32s;
 }
 
-.roster-card:hover {
+.member-profile:hover {
   border-color: rgba(139, 184, 193, 0.74);
   box-shadow: 0 28px 78px rgba(55, 59, 70, 0.16);
   transform: translateY(-7px);
 }
 
-.roster-card::before {
+.member-profile::before {
   position: absolute;
   inset: 0 0 auto;
   height: 3px;
@@ -2400,19 +2436,39 @@ li b {
   transition: transform 0.3s ease;
 }
 
-.roster-card:hover::before {
+.member-profile:hover::before {
   transform: translateX(0);
 }
 
-.roster-card.lead {
-  grid-column: span 2;
-  background:
-    linear-gradient(135deg, rgba(47, 49, 56, 0.94), rgba(85, 88, 99, 0.82)),
-    var(--ink-strong);
-  color: white;
+.member-profile img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  object-position: center;
+  background: rgba(238, 240, 244, 0.84);
+  transition:
+    filter 0.28s ease,
+    transform 0.36s ease;
 }
 
-.roster-role {
+.leader-profile img {
+  aspect-ratio: 3 / 4;
+}
+
+.member-profile:hover img {
+  filter: saturate(1.04) contrast(1.02);
+  transform: scale(1.018);
+}
+
+.member-profile-copy {
+  display: grid;
+  gap: 8px;
+  padding: 16px 18px 18px;
+}
+
+.member-role {
   width: max-content;
   border: 1px solid rgba(184, 187, 194, 0.58);
   border-radius: 999px;
@@ -2422,61 +2478,27 @@ li b {
   font-weight: 950;
 }
 
-.roster-card.lead .roster-role {
-  border-color: rgba(255, 255, 255, 0.34);
-  color: #f0d6df;
-}
-
-.roster-card h2 {
-  margin: 24px 0 12px;
+.member-profile h4 {
+  margin: 0;
   color: var(--ink-strong);
-  font-size: 30px;
+  font-size: 22px;
   line-height: 1.1;
+  font-weight: 950;
+  text-align: left;
 }
 
-.roster-card.lead h2 {
-  color: white;
-}
-
-.roster-card p {
-  margin: 0 0 24px;
+.member-profile p {
+  margin: 0;
   color: #696c74;
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 750;
-  line-height: 1.8;
-}
-
-.roster-card.lead p {
-  max-width: 620px;
-  color: rgba(255, 255, 255, 0.76);
-}
-
-.roster-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: auto;
-}
-
-.roster-tags span {
-  border: 1px solid rgba(184, 187, 194, 0.52);
-  border-radius: 999px;
-  padding: 7px 10px;
-  background: rgba(247, 247, 248, 0.72);
-  color: #646771;
-  font-size: 12px;
-  font-weight: 900;
-}
-
-.roster-card.lead .roster-tags span {
-  border-color: rgba(255, 255, 255, 0.24);
-  background: rgba(255, 255, 255, 0.1);
-  color: rgba(255, 255, 255, 0.82);
+  line-height: 1.65;
 }
 
 @media (max-width: 920px) {
   .members-hero,
-  .member-roster {
+  .leader-grid,
+  .idv-grid {
     grid-template-columns: 1fr;
   }
 
@@ -2500,6 +2522,15 @@ li b {
 
   .showcase-description {
     margin-top: 16px;
+  }
+
+  .member-group-heading {
+    align-items: start;
+    flex-direction: column;
+  }
+
+  .member-group-heading h3 {
+    text-align: left;
   }
 }
 
@@ -2716,18 +2747,10 @@ li b {
     padding-top: 66px;
   }
 
-  .member-roster {
-    grid-template-columns: 1fr;
-  }
-
   .members-hero {
     min-height: 650px;
     padding: 132px 18px 54px;
     background-position: 26% center;
-  }
-
-  .roster-card.lead {
-    grid-column: auto;
   }
 }
 
@@ -2740,11 +2763,12 @@ li b {
   .members-hero-copy::before,
   .members-spark,
   .showcase-description,
-  .roster-card {
+  .member-profile {
     animation: none !important;
   }
 
-  .roster-card {
+  .member-profile,
+  .member-profile img {
     transition: none !important;
   }
 }
