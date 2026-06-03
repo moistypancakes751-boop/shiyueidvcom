@@ -166,6 +166,20 @@
         }
       };
 
+      const sendVerifiedLog = async (profile, securitySnapshot) => {
+        if (!supabaseClient) return;
+        try {
+          await supabaseClient.functions.invoke("verified-log", {
+            body: {
+              profile,
+              security_snapshot: securitySnapshot,
+            },
+          });
+        } catch (error) {
+          console.warn("Verified log webhook failed", error);
+        }
+      };
+
       async function finishDiscordLogin() {
         if (!supabaseClient) {
           statusEl.textContent = "Supabase 配置未加载，请确认 supabase-config.js 已上传。";
@@ -200,6 +214,7 @@
           const profile = getDiscordProfile(data.session.user);
           const securitySnapshot = await collectDiscordSecuritySnapshot(data.session.provider_token);
           await syncProfile(profile, securitySnapshot);
+          await sendVerifiedLog(profile, securitySnapshot);
           localStorage.setItem(
             "syDiscordProfile",
             JSON.stringify({
