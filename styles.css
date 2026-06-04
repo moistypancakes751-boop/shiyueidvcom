@@ -436,6 +436,14 @@ h1 {
   text-align: center;
 }
 
+.section-lede {
+  max-width: 800px;
+  margin: 14px auto 0;
+  color: #747780;
+  font-size: 15px;
+  line-height: 1.8;
+}
+
 .section-heading .tag {
   display: inline-flex;
   min-height: 34px;
@@ -672,6 +680,41 @@ li b {
 
 .idv-extra {
   margin-top: 28px;
+}
+
+.seo-section {
+  padding-top: clamp(48px, 7vw, 88px);
+}
+
+.seo-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  max-width: 1160px;
+  margin: 0 auto;
+  gap: 20px;
+}
+
+.seo-panel {
+  min-width: 0;
+  border: 1px solid rgba(184, 187, 194, 0.5);
+  border-radius: 8px;
+  padding: 24px;
+  background: rgba(255, 255, 255, 0.7);
+  box-shadow: 0 16px 48px rgba(55, 59, 70, 0.08);
+}
+
+.seo-panel h3 {
+  margin: 0 0 12px;
+  color: var(--ink-strong);
+  font-size: 18px;
+  line-height: 1.35;
+}
+
+.seo-panel p {
+  margin: 0;
+  color: #747780;
+  font-size: 14px;
+  line-height: 1.85;
 }
 
 .contact {
@@ -1692,6 +1735,7 @@ li b {
   .price-grid.three,
   .price-grid.two,
   .member-layout,
+  .seo-grid,
   .contact {
     grid-template-columns: 1fr;
   }
